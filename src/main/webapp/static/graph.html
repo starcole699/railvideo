@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+    <title>Flow Graph</title>
+
+    <script type="text/javascript" src="/static/lib/vis/vis.js"></script>
+    <script type="text/javascript" src="/static/lib/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/static/lib/handlebars/handlebars.min-v4.0.10.js"></script>
+    <link href="/static/lib/vis/vis-network.min.css" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+        #mynetwork {
+            width: 100%;
+            height: 1000px;
+            border: 1px solid lightgray;
+        }
+    </style>
+</head>
+<body>
+
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+    var _nodes = new vis.DataSet();
+    var _edges = new vis.DataSet();
+
+    var nodesInfo = {};
+
+    var container = document.getElementById('mynetwork');
+    var data = {
+        nodes: _nodes,
+        edges: _edges,
+    };
+
+
+    var options = {
+        clickToUse:true,
+        autoResize: true,
+        nodes:{
+            shadow:true,
+            borderWidth:5,
+        },
+        edges: {
+            shadow:true,
+            smooth: {
+                type: "cubicBezier",
+                forceDirection: "none",
+                roundness: 0.8
+            }
+        },
+        physics: {
+            enabled: false,
+            "repulsion": {
+                "centralGravity": 3,
+                "springConstant": 0.18,
+                "nodeDistance": 35,
+                "damping": 0.1
+            },
+            "maxVelocity": 80,
+            "minVelocity": 0.75,
+            "solver": "repulsion"
+        },
+        layout: {
+            randomSeed: undefined,
+            improvedLayout:true,
+            hierarchical: {
+                enabled:true,
+                levelSeparation: 100,
+                nodeSpacing: 150,
+                //treeSpacing: 200,
+                blockShifting: true,
+                edgeMinimization: true,
+                parentCentralization: true,
+                direction: 'UD',        // UD, DU, LR, RL
+                sortMethod: 'directed'   // hubsize, directed
+            }
+        }/*,
+        configure: {
+            enabled: true,
+            filter: 'physics',
+            showButton: true
+        }*/
+    }
+
+    //var DIR = 'img/refresh-cl/';
+    //var LENGTH_MAIN = 150;
+    //var LENGTH_SUB = 50;
+
+
+    var svg_template = '<svg xmlns="http://www.w3.org/2000/svg" width="300px" height="70px" viewBox="0 0 300 70">' +
+            '<rect x="0" y="0" width="100%" height="100%" fill="#3892D0" stroke-width="2" stroke="#000000" ></rect>' +
+            '<foreignObject x="4" y="4" width="292" height="62" >' +
+            '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:16px">' +
+            '<span style="color:white; font-size:22px; text-shadow:0 0 10px #000000;">{{name}}<br/></span>' +
+            '{{processType}}<hr/>' +
+            '</div>' +
+            '</foreignObject>' +
+            '</svg>';
+
+    var svg_template_selected = '<svg xmlns="http://www.w3.org/2000/svg" width="300px" height="70px" viewBox="0 0 300 70">' +
+            '<rect x="0" y="0" width="100%" height="100%" fill="#43B6FF" stroke-width="2" stroke="#0000CC" ></rect>' +
+            '<foreignObject x="4" y="4" width="292" height="62" >' +
+            '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:16px;color:#0066AA">' +
+            '<span style="color:#005599; font-size:22px; text-shadow:0 0 10px #000044;">{{name}}<br/></span>' +
+            '{{processType}}<hr/>' +
+            '</div>' +
+            '</foreignObject>' +
+            '</svg>';
+
+    var node_template_c = Handlebars.compile(svg_template);
+    var node_template_selected = Handlebars.compile(svg_template_selected);
+
+    //_nodes.add({id: 4, label: 'Using SVG', image: '/static/img/logo2.png', shape: 'image'})
+
+    nodesData = $.getJSON('/flow/comps/graph.json', function(response) {
+        nodesInfo = {};
+        response.beans.forEach( function (bean)
+        {
+            var url = "data:image/svg+xml;charset=utf-8,"+ encodeURIComponent(node_template_c(bean));
+            var url_s = "data:image/svg+xml;charset=utf-8,"+ encodeURIComponent(node_template_selected(bean));
+
+            //document.write('<img src="' + url + '"/>')
+            nodesInfo[bean.name] = bean
+            _nodes.add({id:bean.name, image: {unselected:url,selected:url_s}, shape: 'image'});
+            //document.write(node_template_c(bean));
+        });
+        //_nodes.add({id: 1, label: 'Get HTML', image: url_sample, shape: 'image'});
+        console.log(nodesInfo)
+        response.links.forEach( function (edge){
+            edge.arrows = 'to';
+            _edges.add(edge);
+        })
+        //_nodes.add(response.nodes);
+    });
+    var network = new vis.Network(container, data, options);
+
+    network.redraw()
+
+    setTheData()
+
+    function setTheData() {
+        network.setData({nodes:_nodes, edges:_edges})
+
+    }
+
+    network.stabilize();
+
+    network.on("doubleClick", function (params) {
+        params.event = "[original event]";
+        if(params.nodes.length != 1){
+            return;
+        }
+        node = nodesInfo[params.nodes[0]]
+        jmxUrl = "/jmx/servers/0/domains/rgups.railvideo.proc/mbeans/name%3D" + node.name + "%2Ctype%3D" + node.type + "/"
+        imgUrl = "/static/picture.html?beanId=" + node.name
+
+        console.log(window.parent);
+
+        window.parent.document.getElementById('editor').src = jmxUrl;
+        window.parent.document.getElementById('picture').src = imgUrl;
+    });
+</script>
+
+
+
+
+</body>
+</html>

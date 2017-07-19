@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Processing Flow Editor</title>
+    <script language="JavaScript">
+        function getQueryParameter ( parameterName ) {
+            var queryString = window.location.search.substring(1);
+            var parameterName = parameterName + "=";
+            if ( queryString.length > 0 ) {
+                begin = queryString.indexOf ( parameterName );
+                if ( begin != -1 ) {
+                    begin += parameterName.length;
+                    end = queryString.indexOf ( "&" , begin );
+                    if ( end == -1 ) {
+                        end = queryString.length
+                    }
+                    return unescape ( queryString.substring ( begin, end ) );
+                }
+            }
+            return "null";
+        }
+
+
+        var beanId = getQueryParameter("beanId");
+        var imgUrl = "/flow/comps/" + beanId + "/img"
+    </script>
+</head>
+<body>
+    <script language="JavaScript">
+        document.write(beanId);
+    </script>
+
+    <img id="frameImg" src="#"/>
+
+    <script language="JavaScript">
+        document.getElementById('frameImg').src=imgUrl;
+        var n = 0;
+        function reload() {
+            document.getElementById('frameImg').src=imgUrl + "?n=" + n;
+            n = n + 1
+        }
+        setInterval(reload , 5000)
+
+    </script>
+</body>
+</html>
