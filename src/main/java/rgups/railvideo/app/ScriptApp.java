@@ -12,9 +12,11 @@ import java.io.StringWriter;
 public class ScriptApp {
 
     static String pycode =
-            "for i in range(1,10): " +
+            "import logging\n" +
+            "for i in range(1,10):\n" +
             "    print(i)\n" +
             "    host.alarm(str(i))\n" +
+            "    logging.info(i)\n" +
             "print(frame)\n" +
             "frame.id = 100";
 
