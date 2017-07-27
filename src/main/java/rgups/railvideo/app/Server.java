@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -29,6 +30,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @ComponentScan({"rgups.railvideo.web",
                 "rgups.railvideo.service"})
 @Import({DefaultFlowConfig.class, JpaConfiguration.class, MvcConfig.class})
+@ImportResource("file:C:\\Users\\Dmitry\\IdeaProjects\\camwork\\railvideo\\src\\main\\resources\\sensors_processors.groovy")
 public class Server {
 
     public static void main(String...args){

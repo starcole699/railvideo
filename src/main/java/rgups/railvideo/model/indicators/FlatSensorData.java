@@ -70,4 +70,11 @@ public class FlatSensorData {
                 ", averageValue=" + averageValue +
                 '}';
     }
+
+    public Object[] splitHeaderAndData(){
+        Object[] ret = new Object[2];
+        ret[0] = new ChannelHeader(sensorName, sensorType, channel);
+        ret[1] = new ChannelValue(startTime, endTime, minValue, maxValue, averageValue);
+        return ret;
+    }
 }

@@ -41,6 +41,6 @@ public class ScriptApp {
     }
 
     public void alarm(String text) {
-        System.out.println("Alarm: " + text);
+        System.out.println("DbAlarm: " + text);
     }
 }

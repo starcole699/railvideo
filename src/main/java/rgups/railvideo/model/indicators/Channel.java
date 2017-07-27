@@ -13,7 +13,7 @@ public class Channel {
     @JsonProperty(value = "min_value")
     Double min;
 
-    @JsonProperty(value = "maxvalue")
+    @JsonProperty(value = "max_value")
     Double max;
 
     @JsonProperty(value = "average_value")

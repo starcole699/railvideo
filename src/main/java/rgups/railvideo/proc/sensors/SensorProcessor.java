@@ -1,6 +1,8 @@
 package rgups.railvideo.proc.sensors;
 
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import rgups.railvideo.core.flow.RailvideoEvent;
@@ -18,13 +20,15 @@ public class SensorProcessor implements BeanNameAware {
     String sensorType;
     String channel;
 
+    @Autowired
+    ApplicationEventPublisher applicationEventPublisher;
+
     @EventListener
     public void acceptEvent(SensorEvent event) {
         if (!shouldEvent(event)){
             return;
         }
-
-
+        processEvent(event);
     }
 
     public void processEvent(SensorEvent event) {
