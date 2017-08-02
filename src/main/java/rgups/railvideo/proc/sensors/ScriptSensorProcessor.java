@@ -78,4 +78,36 @@ public class ScriptSensorProcessor extends SensorProcessor implements ResourceLo
     public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Map<String, ?> getConf() {
+        return conf;
+    }
+
+    public void setConf(Map<String, ?> conf) {
+        this.conf = conf;
+    }
 }

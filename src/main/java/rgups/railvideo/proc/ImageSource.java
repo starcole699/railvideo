@@ -69,7 +69,7 @@ public class ImageSource extends ImageProcessor {
         // Image source doesn't process anything.
     }
 
-    @Scheduled(fixedDelay = 30000, initialDelay = 5000)
+    @Scheduled(fixedDelay = 300, initialDelay = 5000)
     public void capture() {
         Mat img = new Mat();
 

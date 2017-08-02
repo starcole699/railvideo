@@ -6,7 +6,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import rgups.railvideo.core.flow.RailvideoEvent;
+import rgups.railvideo.model.alarms.UiAlarm;
 import rgups.railvideo.model.indicators.FlatSensorData;
+import rgups.railvideo.proc.ImageSource;
 
 /**
  * Created by Dmitry on 20.07.2017.
@@ -22,6 +24,9 @@ public class SensorProcessor implements BeanNameAware {
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired(required=false)
+    ImageSource imageSource;
 
     @EventListener
     public void acceptEvent(SensorEvent event) {
@@ -79,5 +84,15 @@ public class SensorProcessor implements BeanNameAware {
 
     public void setChannel(String channel) {
         this.channel = channel;
+    }
+
+    public UiAlarm createAlarm(String level, String type, String header, String details) {
+        UiAlarm alarm = new UiAlarm(level, type, header, details);
+
+        if (null != imageSource){
+
+        }
+
+        return alarm;
     }
 }

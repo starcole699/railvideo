@@ -74,6 +74,13 @@ public class DefaultFlowConfig {
         return ret;
     }
 
-
+    @Bean
+    public ImageSaver alarmImageSaver(@Value("${rv.alarm.frame_save_path}") String path){
+        ImageSaver ret = new ImageSaver();
+        ret.setSavePath(path);
+        ret.setTimeInterval(-1);
+        ret.addAccept("alarm->NEW_ALARM_FRAME");
+        return ret;
+    }
 
 }

@@ -30,7 +30,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @ComponentScan({"rgups.railvideo.web",
                 "rgups.railvideo.service"})
 @Import({DefaultFlowConfig.class, JpaConfiguration.class, MvcConfig.class})
-@ImportResource("file:C:\\Users\\Dmitry\\IdeaProjects\\camwork\\railvideo\\src\\main\\resources\\sensors_processors.groovy")
+@ImportResource("classpath:/config/sensors_processors.groovy")
 public class Server {
 
     public static void main(String...args){

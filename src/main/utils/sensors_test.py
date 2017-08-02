@@ -138,7 +138,7 @@ def generate_sample():
             chd['min_value'] = min
             chd['max_value'] = max
             channels_data.append(chd)
-        sd['channels'] =  channels_data
+        sd['channels'] = channels_data
         sensors_data.append(sd)
     ret['sensors'] = sensors_data
     return ret

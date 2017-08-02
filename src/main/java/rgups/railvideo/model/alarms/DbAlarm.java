@@ -18,6 +18,9 @@ public class DbAlarm {
     @Temporal(TemporalType.TIMESTAMP)
     private Date time;
 
+    @Column(name="LEVEL", nullable=false)
+    String level;
+
     @Column(name="TYPE", nullable=false)
     String type;
 
