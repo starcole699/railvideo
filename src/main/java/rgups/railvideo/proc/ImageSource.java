@@ -46,6 +46,8 @@ public class ImageSource extends ImageProcessor {
     @RvFlowProperty
     String captureType = "raw";
 
+    Long capturePeriod = 1000L;
+
     @RvFlowProperty
     @Value("${rv.timezone:Europe/Moscow}")
     String timezone;
@@ -69,7 +71,7 @@ public class ImageSource extends ImageProcessor {
         // Image source doesn't process anything.
     }
 
-    @Scheduled(fixedDelay = 300, initialDelay = 5000)
+    @Scheduled(fixedDelay = 10, initialDelay = 5000)
     public void capture() {
         Mat img = new Mat();
 
@@ -95,6 +97,12 @@ public class ImageSource extends ImageProcessor {
         } else {
             LOG.error("Image source is not opened.");
         }
+
+        try {
+            Thread.sleep(capturePeriod);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public String generateCaptureId() {
@@ -107,4 +115,11 @@ public class ImageSource extends ImageProcessor {
         return sdf.format(new Date(mills)) + "_" + nano;
     }
 
+    public Long getCapturePeriod() {
+        return capturePeriod;
+    }
+
+    public void setCapturePeriod(Long capturePeriod) {
+        this.capturePeriod = capturePeriod;
+    }
 }

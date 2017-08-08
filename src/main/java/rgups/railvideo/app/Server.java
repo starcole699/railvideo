@@ -4,10 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -27,10 +24,13 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
+@EnableMBeanExport
 @ComponentScan({"rgups.railvideo.web",
                 "rgups.railvideo.service"})
-@Import({DefaultFlowConfig.class, JpaConfiguration.class, MvcConfig.class})
-@ImportResource("classpath:/config/sensors_processors.groovy")
+@Import({/*DefaultFlowConfig.class,*/ JpaConfiguration.class, MvcConfig.class})
+@ImportResource({"classpath:/config/sensors_processors.groovy",
+                 "classpath:/config/flow_config.groovy"
+                })
 public class Server {
 
     public static void main(String...args){

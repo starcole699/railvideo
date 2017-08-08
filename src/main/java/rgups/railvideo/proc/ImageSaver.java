@@ -1,7 +1,6 @@
 package rgups.railvideo.proc;
 
 import org.opencv.core.Mat;
-import org.opencv.highgui.Highgui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
