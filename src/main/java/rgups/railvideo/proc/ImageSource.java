@@ -1,9 +1,11 @@
 package rgups.railvideo.proc;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ public class ImageSource extends ImageProcessor {
     @RvFlowProperty
     String captureType = "raw";
 
+    @RvFlowProperty
     Long capturePeriod = 1000L;
 
     @RvFlowProperty
@@ -60,10 +63,11 @@ public class ImageSource extends ImageProcessor {
         this.path = path;
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void open() {
         LOG.info("Initializing video capture from: " + path);
         capture = new VideoCapture(path);
+
     }
 
     @Override
@@ -71,20 +75,44 @@ public class ImageSource extends ImageProcessor {
         // Image source doesn't process anything.
     }
 
-    @Scheduled(fixedDelay = 10, initialDelay = 5000)
+
+    void flushBuffer() {
+        double fps = capture.get(Videoio.CAP_PROP_FPS);
+        LOG.info("===== Flushing buffer. Fps :  " + fps);
+        double minDelayNano = 1000000000.0/fps;
+        long prevT, curT, grabbed = 0;
+        do {
+            grabbed++;
+            prevT = System.nanoTime();
+            capture.grab();
+            curT = System.nanoTime();
+        } while (curT - prevT < minDelayNano);
+        LOG.info("Buffer flushed. " + grabbed + " frames grabbed.");
+    }
+
+    @Scheduled(fixedDelay = 10, initialDelay = 500)
     public void capture() {
-        Mat img = new Mat();
+        if (null == capture) {
+            open();
+            flushBuffer();
+        }
+
+        int w = (int)capture.get(Videoio.CAP_PROP_FRAME_WIDTH);
+        int h = (int)capture.get(Videoio.CAP_PROP_FRAME_HEIGHT);
+        Mat img = new Mat(h, w, CvType.CV_8UC3);
 
         if (capture.isOpened()) {
-            capture.read(img);
+            capture.grab();
+            capture.retrieve(img);
             if (!img.empty()) {
                 cnt.incrementAndGet();
                 LOG.info("Captured image " + cnt + " size:" + img.width() + "*" + img.height());
                 RailvideoEvent event = newRailvideoEvent();
                 event.setCaptureId(generateCaptureId());
 
-                Mat new_img = new Mat();
-                Imgproc.resize(img, new_img, new Size(1920, 1080), 0, 0, Imgproc.INTER_CUBIC);
+                Mat new_img = img;
+                //Mat new_img = new Mat();
+                //Imgproc.resize(img, new_img, new Size(1920, 1080), 0, 0, Imgproc.INTER_CUBIC);
 
                 ImageProcContext.Action action = newAction();
                 action.putData(RailvideoEvent.RAW_IMAGE, new_img);
@@ -96,12 +124,6 @@ public class ImageSource extends ImageProcessor {
             }
         } else {
             LOG.error("Image source is not opened.");
-        }
-
-        try {
-            Thread.sleep(capturePeriod);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 

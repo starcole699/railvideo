@@ -157,7 +157,7 @@ for i in range(0, 20):
     j_str = json.dumps(generate_sample())
     print(j_str)
     print('\n\n')
-    req = urllib2.Request('http://localhost:8080/sensors/stats')
+    req = urllib2.Request('http://192.168.5.112:8765/sensors/stats')
     req.add_header('Content-Type', 'application/json')
     response = urllib2.urlopen(req, j_str)
     time.sleep(1)

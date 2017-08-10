@@ -51,9 +51,9 @@ public class Main {
         }
         System.out.println(Native.getNativeLibsPathSuffix());
 
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         System.loadLibrary("opencv_ffmpeg320_64");
-        //System.loadLibrary("opencv_java320");
+        System.loadLibrary("opencv_java320");
 
         Main app = new Main();
         app.initGUI();
@@ -85,15 +85,19 @@ public class Main {
         ImageProcessor imageProcessor = new ImageProcessor();
         Mat webcamMatImage = new Mat();
         BufferedImage tempImage;
+
+        String videourl = "rtsp://admin:admin123@192.168.5.64:554/Streaming/Channels/101";
 //        VideoCapture capture = new VideoCapture("http://192.168.1.2:8080/shot.jpg");
 //        VideoCapture capture = new VideoCapture("http://192.168.1.106:8080/video");
 //        VideoCapture capture = new VideoCapture("E:\\Downloads\\films\\The Machinist '04 [Wrnr].mkv");
-        VideoCapture capture = new VideoCapture("C:\\work\\raivideo_test\\192.168.1.64_01_20170629200733332.mp4");
+//        VideoCapture capture = new VideoCapture("C:\\work\\raivideo_test\\192.168.1.64_01_20170629200733332.mp4");
 
-//        VideoCapture capture = new VideoCapture("rtsp://admin:admin123@192.168.1.64:554/Streaming/Channels/101");
-        http://192.168.1.64
-        capture.set(Videoio.CAP_PROP_FRAME_WIDTH, 1920);
-        capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, 1024);
+        VideoCapture capture = new VideoCapture(videourl);
+        capture.release();
+        capture = new VideoCapture(videourl);
+
+        //capture.set(Videoio.CAP_PROP_FRAME_WIDTH, 1920);
+        //capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, 1024);
         if (capture.isOpened()) {
             while (true) {
                 frame_N ++;
@@ -104,7 +108,8 @@ public class Main {
                     webcamMatImage = applyFilters(webcamMatImage);
                     //tempImage = imageProcessor.toBufferedImage(webcamMatImage);
                     tempImage = toVisibleImage(webcamMatImage);
-                    
+
+                    //Image visibleImg = tempImage;
                     Image visibleImg = tempImage.getScaledInstance(1920, 1080, Image.SCALE_FAST);
 
                     ImageIcon imageIcon = new ImageIcon(visibleImg, "Captured video");
@@ -144,7 +149,7 @@ public class Main {
         //img = filterNoise(img);
         //img = doSobel(img);
         //img = doLaplacian(img);
-        img = doCanny(img);
+        //img = doCanny(img);
         //detectChanges(img, raw_img);
         return img;
     }

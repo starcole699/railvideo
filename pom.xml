@@ -40,17 +40,17 @@
             <artifactId>opencv-java</artifactId>
             <version>3.2.0</version>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>nu.pattern</groupId>
             <artifactId>opencv</artifactId>
             <version>2.4.9-7</version>
-        </dependency-->
+        </dependency>
 
-        <!--dependency>
+        <dependency>
             <groupId>org.javaopencvbook</groupId>
             <artifactId>opencvjar</artifactId>
             <version>3.0.0</version>
-        </dependency-->
+        </dependency>
 
         <!--dependency>
             <groupId>org.javaopencvbook</groupId>

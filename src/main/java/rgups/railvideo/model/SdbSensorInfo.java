@@ -12,7 +12,7 @@ import java.util.List;
 public class SdbSensorInfo {
 
     @Id
-    @Column(name="NAME")
+    @Column(name="NAME", length=128)
     private String name;
 
     @Column(name="DESCR", nullable=true)

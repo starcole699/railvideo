@@ -36,6 +36,9 @@ public class ImageSaver extends ImageProcessor {
 
     long lastSaveTime = 0;
 
+    @RvFlowProperty
+    String format = "jpeg";
+
     @Override
     void processAsync(ImageProcContext.Action action, RailvideoEvent event) {
         LOG.info("Accepted image " + event.frameN + "_" + event.captureId);
@@ -67,7 +70,7 @@ public class ImageSaver extends ImageProcessor {
             }
         }
 
-        String name = event.getCaptureId() + "_raw.png";
+        String name = event.getCaptureId() + "_raw." + format;
 
         return new File(sd, name).getAbsolutePath();
     }
@@ -90,5 +93,15 @@ public class ImageSaver extends ImageProcessor {
     @ManagedAttribute
     public void setTimeInterval(long timeInterval) {
         this.timeInterval = timeInterval;
+    }
+
+    @ManagedAttribute
+    public String getFormat() {
+        return format;
+    }
+
+    @ManagedAttribute
+    public void setFormat(String format) {
+        this.format = format;
     }
 }

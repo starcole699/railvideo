@@ -16,7 +16,6 @@ public class Channel {
     @JsonProperty(value = "max_value")
     Double max;
 
-    @JsonProperty(value = "average_value")
     Double avg;
 
     public String getName() {
@@ -43,10 +42,12 @@ public class Channel {
         this.max = max;
     }
 
+    @JsonProperty(value = "average_value")
     public Double getAvg() {
         return avg;
     }
 
+    @JsonProperty(value = "average_value")
     public void setAvg(Double avg) {
         this.avg = avg;
     }

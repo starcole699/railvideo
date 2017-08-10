@@ -159,7 +159,7 @@ public class ImageProcessor implements ProcessorFrameController, BeanNameAware {
 
 
     protected RailvideoEvent newRailvideoEvent(){
-        RailvideoEvent event = new RailvideoEvent(this, cnt.incrementAndGet(), "");
+        RailvideoEvent event = new RailvideoEvent(this, cnt.get(), "");
         return event;
     }
 
