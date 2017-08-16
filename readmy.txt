@@ -1,0 +1,2 @@
+run: ./src/main/java/rgups/railvideo/app/Runner.java
+run: python src/main/utils/sensors_test.py

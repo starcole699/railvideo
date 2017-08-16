@@ -1,17 +1,19 @@
 <table class="table">
     <thead>
     <tr>
-        <th>Name</th>
-        <th>Value</th>
-        <th>Graph</th>
+        <th>Сенсор</th>
+        <th>startTime</th>
+        <th>minValue</th>
+        <th>maxValue</th>
     </tr>
     </thead>
     <tbody>
     {{#each list}}
     <tr>
-        <td>{{name}}</td>
-        <td>{{value}}</td>
-        <td><div id="chart"></div></td>
+        <td><h3>имя:{{name}}</h3><br/><small>тип:{{type}} канал:{{channel}}</small></td>
+        <td>{{data.startTime}}</td>
+        <td>{{data.minValue}}</td>
+        <td>{{data.maxValue}}</td>
     </tr>
     {{/each}}
     </tbody>

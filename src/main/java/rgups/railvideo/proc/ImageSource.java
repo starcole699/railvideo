@@ -90,11 +90,11 @@ public class ImageSource extends ImageProcessor {
         LOG.info("Buffer flushed. " + grabbed + " frames grabbed.");
     }
 
-    @Scheduled(fixedDelay = 10, initialDelay = 500)
+    @Scheduled(fixedDelay = 2000, initialDelay = 500)
     public void capture() {
         if (null == capture) {
             open();
-            flushBuffer();
+            //flushBuffer();
         }
 
         int w = (int)capture.get(Videoio.CAP_PROP_FRAME_WIDTH);

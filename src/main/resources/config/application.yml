@@ -3,7 +3,7 @@ datasource:
   railvideo_db:
     url: jdbc:mysql://localhost:3306/rv
     username: root
-    password: root
+    password:
     driverClassName: com.mysql.jdbc.Driver
     defaultSchema:
     maxPoolSize: 20
