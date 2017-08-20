@@ -1,7 +1,6 @@
 package rgups.railvideo.proc;
 
 import org.opencv.core.CvType;
-import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
@@ -14,9 +13,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import rgups.railvideo.core.RvMat;
 import rgups.railvideo.core.flow.RailvideoEvent;
 import rgups.railvideo.proc.model.ImageProcContext;
 import rgups.railvideo.proc.model.RvFlowProperty;
+import rgups.railvideo.service.MatSupervisor;
 import rgups.railvideo.system.NativeLibLoader;
 
 import javax.annotation.PostConstruct;
@@ -40,6 +41,9 @@ public class ImageSource extends ImageProcessor {
     @Autowired
     NativeLibLoader nativeLibLoader;
 
+    @Autowired
+    MatSupervisor matSupervisor;
+
     VideoCapture capture;
 
     @RvFlowProperty
@@ -54,6 +58,8 @@ public class ImageSource extends ImageProcessor {
     @RvFlowProperty
     @Value("${rv.timezone:Europe/Moscow}")
     String timezone;
+
+    RvMat captureImg;
 
     {
         processType = "NEW_IMAGE";
@@ -78,6 +84,10 @@ public class ImageSource extends ImageProcessor {
 
     void flushBuffer() {
         double fps = capture.get(Videoio.CAP_PROP_FPS);
+        if (0 == fps) {
+            LOG.warn("Fps value is " + fps + ". Will skip buffer flush.");
+            return;
+        }
         LOG.info("===== Flushing buffer. Fps :  " + fps);
         double minDelayNano = 1000000000.0/fps;
         long prevT, curT, grabbed = 0;
@@ -90,27 +100,29 @@ public class ImageSource extends ImageProcessor {
         LOG.info("Buffer flushed. " + grabbed + " frames grabbed.");
     }
 
-    @Scheduled(fixedDelay = 10, initialDelay = 500)
+    @Scheduled(fixedDelay = 2000, initialDelay = 500)
     public void capture() {
         if (null == capture) {
             open();
             flushBuffer();
         }
 
-        int w = (int)capture.get(Videoio.CAP_PROP_FRAME_WIDTH);
-        int h = (int)capture.get(Videoio.CAP_PROP_FRAME_HEIGHT);
-        Mat img = new Mat(h, w, CvType.CV_8UC3);
+        if (null == captureImg) {
+            int w = (int) capture.get(Videoio.CAP_PROP_FRAME_WIDTH);
+            int h = (int) capture.get(Videoio.CAP_PROP_FRAME_HEIGHT);
+            captureImg = new RvMat(h, w, CvType.CV_8UC3);
+        }
 
         if (capture.isOpened()) {
             capture.grab();
-            capture.retrieve(img);
-            if (!img.empty()) {
+            capture.retrieve(captureImg);
+            if (!captureImg.empty()) {
                 cnt.incrementAndGet();
-                LOG.info("Captured image " + cnt + " size:" + img.width() + "*" + img.height());
+                LOG.info("Captured image " + cnt + " size:" + captureImg.width() + "*" + captureImg.height());
                 RailvideoEvent event = newRailvideoEvent();
                 event.setCaptureId(generateCaptureId());
 
-                Mat new_img = img;
+                RvMat new_img = captureImg;
                 //Mat new_img = new Mat();
                 //Imgproc.resize(img, new_img, new Size(1920, 1080), 0, 0, Imgproc.INTER_CUBIC);
 
@@ -119,6 +131,7 @@ public class ImageSource extends ImageProcessor {
                 showImageOnFrame(new_img, event);
                 publishEvent(event, action);
                 event.waitForProcessFinish();
+                matSupervisor.releaseFreeMats();
             } else {
                 LOG.error("Captured image is empty.");
             }

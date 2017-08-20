@@ -1,6 +1,5 @@
 package rgups.railvideo.service;
 
-import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -8,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import rgups.railvideo.core.RvMat;
 import rgups.railvideo.proc.ImageProcessor;
 import rgups.railvideo.proc.RvFlowItem;
 import rgups.railvideo.proc.model.RvFlowItemDefinition;
@@ -86,7 +86,7 @@ public class RvItemsService {
         }
 
         if (bean instanceof ImageProcessor) {
-            Mat imgMat = ((ImageProcessor)bean).getCurrentImage();
+            RvMat imgMat = ((ImageProcessor)bean).getCurrentImage();
             if (null == imgMat) {
                 throw new IllegalStateException(id + " bean has no image to show.");
             }

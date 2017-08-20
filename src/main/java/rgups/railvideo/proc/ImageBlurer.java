@@ -1,6 +1,5 @@
 package rgups.railvideo.proc;
 
-import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.slf4j.Logger;
@@ -8,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.stereotype.Component;
+import rgups.railvideo.core.RvMat;
 import rgups.railvideo.core.flow.RailvideoEvent;
 import rgups.railvideo.proc.model.ImageProcContext;
 import rgups.railvideo.proc.model.RvFlowProperty;
@@ -32,8 +32,8 @@ public class ImageBlurer extends ImageProcessor {
     @Override
     void processAsync(ImageProcContext.Action action, RailvideoEvent event) {
         LOG.info("Accepted image " + event.frameN + "_" + event.captureId);
-        Mat new_img = new Mat();
-        Mat img = action.getImageData();
+        RvMat new_img = new RvMat();
+        RvMat img = action.getImageData();
         Imgproc.GaussianBlur(img, new_img, new Size(7, 7), -1);
 
         ImageProcContext.Action newAction = newAction();

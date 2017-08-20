@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelec
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -25,6 +26,9 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @EnableScheduling
 @EnableAsync
 @EnableMBeanExport
+//@EnableAspectJAutoProxy(proxyTargetClass=true)
+//@EnableSpringConfigured
+//@EnableLoadTimeWeaving
 @ComponentScan({"rgups.railvideo.web",
                 "rgups.railvideo.service"})
 @Import({/*DefaultFlowConfig.class,*/ JpaConfiguration.class, MvcConfig.class})

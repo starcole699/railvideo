@@ -1,6 +1,6 @@
 package rgups.railvideo.proc.model;
 
-import org.opencv.core.Mat;
+import rgups.railvideo.core.RvMat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,10 +105,10 @@ public class ImageProcContext {
             this.context = context;
         }
 
-        public Mat getImageData(){
+        public RvMat getImageData(){
             for (Object o : data.values()){
-                if (o instanceof Mat) {
-                    return (Mat)o;
+                if (o instanceof RvMat) {
+                    return (RvMat)o;
                 }
             }
             throw new IllegalStateException("No image data in action.");

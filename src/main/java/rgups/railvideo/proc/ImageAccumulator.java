@@ -7,8 +7,12 @@ import org.opencv.imgproc.Imgproc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
+import rgups.railvideo.core.RvMat;
 import rgups.railvideo.core.flow.RailvideoEvent;
 import rgups.railvideo.proc.model.ImageProcContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Dmitry on 03.07.2017.
@@ -20,7 +24,7 @@ public class ImageAccumulator extends ImageProcessor {
 
     private volatile long framesCount = 0;
 
-    volatile Mat acc;
+    volatile RvMat acc;
 
     {
         processType = "ACCUMULATE_IMAGE";
@@ -31,11 +35,11 @@ public class ImageAccumulator extends ImageProcessor {
         double weight = 1.0/accumulateFrames;
         synchronized (this) {
             LOG.info("Accepted image " + event.frameN + "_" + event.captureId);
-            Mat img = action.getImageData();
+            RvMat img = action.getImageData();
             framesCount++;
 
             if (null == acc) {
-                acc = new Mat(img.rows(), img.cols(), CvType.CV_32FC1);
+                acc = new RvMat(img.rows(), img.cols(), CvType.CV_32FC1);
             }
 
             Imgproc.accumulateWeighted(img, acc, weight);
@@ -43,7 +47,7 @@ public class ImageAccumulator extends ImageProcessor {
             if (framesCount > accumulateFrames) {
                 ImageProcContext.Action newAction = newAction();
 
-                Mat new_img = new Mat(img.rows(), img.cols(), CvType.CV_8UC1);
+                RvMat new_img = new RvMat(img.rows(), img.cols(), CvType.CV_8UC1);
                 acc.convertTo(new_img, CvType.CV_8UC1);
                 newAction.putData("accumulation", new_img);
                 showImageOnFrame(new_img, event);
@@ -60,5 +64,14 @@ public class ImageAccumulator extends ImageProcessor {
     @ManagedAttribute
     public void setAccumulateFrames(int accumulateFrames) {
         this.accumulateFrames = accumulateFrames;
+    }
+
+    @Override
+    public List<Mat> getBearingMats() {
+        List<Mat> ret = super.getBearingMats();
+        if (null != acc) {
+            ret.add(acc);
+        }
+        return ret;
     }
 }

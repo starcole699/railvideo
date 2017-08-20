@@ -10,6 +10,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import rgups.railvideo.core.RvMat;
 import rgups.railvideo.core.flow.RailvideoEvent;
 import rgups.railvideo.proc.model.ImageProcContext;
 import rgups.railvideo.proc.model.RvFlowProperty;
@@ -29,7 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @RvFlowItem
 @ManagedResource
-public class ImageProcessor implements ProcessorFrameController, BeanNameAware {
+public class ImageProcessor implements ProcessorFrameController, MatBearer, BeanNameAware {
 
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
@@ -57,7 +58,7 @@ public class ImageProcessor implements ProcessorFrameController, BeanNameAware {
 
     AtomicLong cnt = new AtomicLong(0);
 
-    Mat currentImage;
+    RvMat currentImage;
 
     @Override
     public void activateFrame() {
@@ -73,7 +74,7 @@ public class ImageProcessor implements ProcessorFrameController, BeanNameAware {
     }
 
 
-    public void showImageOnFrame(Mat img, RailvideoEvent event) {
+    public void showImageOnFrame(RvMat img, RailvideoEvent event) {
         setCurrentImage(img);
         if (null != imageProcessorFrame) {
             imageProcessorFrame.updateImage(img, event);
@@ -192,11 +193,11 @@ public class ImageProcessor implements ProcessorFrameController, BeanNameAware {
         return name;
     }
 
-    public Mat getCurrentImage() {
+    public RvMat getCurrentImage() {
         return currentImage;
     }
 
-    void setCurrentImage(Mat img){
+    void setCurrentImage(RvMat img){
         currentImage = img;
     }
 
@@ -204,7 +205,7 @@ public class ImageProcessor implements ProcessorFrameController, BeanNameAware {
         return type;
     }
 
-    public static BufferedImage matToBufferedImage(Mat matrix) {
+    public static BufferedImage matToBufferedImage(RvMat matrix) {
         int type = BufferedImage.TYPE_BYTE_GRAY;
         if (matrix.channels() > 1) {
             type = BufferedImage.TYPE_3BYTE_BGR;
@@ -217,5 +218,14 @@ public class ImageProcessor implements ProcessorFrameController, BeanNameAware {
         final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(bufferBytes, 0, targetPixels, 0, bufferBytes.length);
         return image;
+    }
+
+    @Override
+    public List<Mat> getBearingMats() {
+        ArrayList<Mat> ret = new ArrayList<Mat>();
+        if (null != currentImage) {
+            ret.add(currentImage);
+        }
+        return ret;
     }
 }

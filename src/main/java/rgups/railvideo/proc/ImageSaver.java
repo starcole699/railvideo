@@ -1,6 +1,5 @@
 package rgups.railvideo.proc;
 
-import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +9,7 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import rgups.railvideo.core.RvMat;
 import rgups.railvideo.core.flow.RailvideoEvent;
 import rgups.railvideo.proc.model.ImageProcContext;
 import rgups.railvideo.proc.model.RvFlowProperty;
@@ -48,7 +48,7 @@ public class ImageSaver extends ImageProcessor {
             return;
         }
         lastSaveTime = time;
-        Mat img = action.getImageData();
+        RvMat img = action.getImageData();
 
         showImageOnFrame(img, event);
 

@@ -1,6 +1,6 @@
 package rgups.railvideo.core.flow.msg;
 
-import org.opencv.core.Mat;
+import rgups.railvideo.core.RvMat;
 
 import java.util.EventObject;
 
@@ -9,7 +9,7 @@ import java.util.EventObject;
  */
 public class ImageEvent extends EventObject {
 
-    Mat img;
+    RvMat img;
 
     /**
      * Constructs a prototypical Event.
