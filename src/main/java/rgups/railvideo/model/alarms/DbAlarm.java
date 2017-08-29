@@ -27,7 +27,7 @@ public class DbAlarm {
     @Column(name="DESCR", nullable=false)
     String descr;
 
-    @Column(name="DETAILS", nullable=true)
+    @Column(name="DETAILS", columnDefinition = "TEXT")
     String details;
 
 

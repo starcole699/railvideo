@@ -28,6 +28,10 @@ public class RvMat extends Mat {
         return retVal;
     }
 
+    public Mat cloneAsMat() {
+        return super.clone();
+    }
+
     public void registerInDefaultSupervisor() {
         MatSupervisor.registerMatDefault(this);
     }

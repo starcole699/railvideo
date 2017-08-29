@@ -1,0 +1,20 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>Сенсор</th>
+        <th>startTime</th>
+        <th>minValue</th>
+        <th>maxValue</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each list}}
+    <tr>
+        <td><h3>имя:{{name}}</h3><br/><small>тип:{{type}} канал:{{channel}}</small></td>
+        <td>{{data.startTime}}</td>
+        <td>{{data.minValue}}</td>
+        <td>{{data.maxValue}}</td>
+    </tr>
+    {{/each}}
+    </tbody>
+</table>

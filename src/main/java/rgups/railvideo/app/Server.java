@@ -3,6 +3,7 @@ package rgups.railvideo.app;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
@@ -26,6 +27,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @EnableScheduling
 @EnableAsync
 @EnableMBeanExport
+@EnableCaching
 //@EnableAspectJAutoProxy(proxyTargetClass=true)
 //@EnableSpringConfigured
 //@EnableLoadTimeWeaving

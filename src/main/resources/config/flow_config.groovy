@@ -3,6 +3,7 @@ import rgups.railvideo.proc.ImageBlurer
 import rgups.railvideo.proc.ImageCanny
 import rgups.railvideo.proc.ImageConverter
 import rgups.railvideo.proc.ImageHistogramEqualizer
+import rgups.railvideo.proc.ImageHistoryKeeper
 import rgups.railvideo.proc.ImageSaver
 import rgups.railvideo.proc.ImageSource
 
@@ -15,6 +16,10 @@ beans {
     rawImageSaver(ImageSaver){
         savePath = "C:\\railvideo\\frames_raw"
         timeInterval = 60000
+        accepts = ["rawImageSource->NEW_IMAGE"]
+    }
+
+    imageHistoryKeeper(ImageHistoryKeeper) {
         accepts = ["rawImageSource->NEW_IMAGE"]
     }
 

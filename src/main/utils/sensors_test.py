@@ -110,7 +110,7 @@ def generate_sample():
     sign = lambda x: (1, -1)[x < 0]
     ret = {
         "start_time":prev_time,
-        "end_time":time.time()
+        "end_time":time.time() * 1000
     }
     prev_time = ret['end_time']
     sensors_data = []
@@ -157,7 +157,8 @@ for i in range(0, 20):
     j_str = json.dumps(generate_sample())
     print(j_str)
     print('\n\n')
-    req = urllib2.Request('http://192.168.5.112:8765/sensors/stats')
+#    req = urllib2.Request('http://192.168.5.112:8765/sensors/stats')
+    req = urllib2.Request('http://localhost:8765/sensors/stats')
     req.add_header('Content-Type', 'application/json')
     response = urllib2.urlopen(req, j_str)
     time.sleep(1)

@@ -13,7 +13,7 @@ public class SensorsDataCache {
 
     Map<ChannelHeader, SortedSet<ChannelValue>> cache = new TreeMap<>();
 
-    public void addValues(List<FlatSensorData> dataList) {
+    public synchronized void addValues(List<FlatSensorData> dataList) {
         Map<ChannelHeader, SortedSet<ChannelValue>> newData = new TreeMap<>();
         for (Map.Entry<ChannelHeader, SortedSet<ChannelValue>> entry : cache.entrySet()){
             ChannelHeader key = entry.getKey();

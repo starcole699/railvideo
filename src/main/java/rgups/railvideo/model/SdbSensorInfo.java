@@ -1,5 +1,7 @@
 package rgups.railvideo.model;
 
+import rgups.railvideo.model.indicators.FlatSensorData;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,11 @@ import java.util.List;
 public class SdbSensorInfo {
 
     @Id
-    @Column(name="NAME", length=128)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="ID")
+    private Long id;
+
+    @Column(name="NAME", length=64)
     private String name;
 
     @Column(name="DESCR", nullable=true)
@@ -25,16 +31,17 @@ public class SdbSensorInfo {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @JoinColumn(name = "SENSOR_NAME")
-    private List<SdbSensorAttr> attrs = new ArrayList<>();
-
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @JoinColumn(name = "SENSOR_NAME")
+    @JoinColumn(name = "SENSOR_ID")
     private List<SdbChannelInfo> channels = new ArrayList<>();
 
+    public SdbSensorInfo(){
+
+    }
+
+    public SdbSensorInfo(FlatSensorData fsd){
+        this.name = fsd.getSensorName();
+        this.type = fsd.getSensorType();
+    }
 
     public String getName() {
         return name;
@@ -60,38 +67,11 @@ public class SdbSensorInfo {
         this.type = type;
     }
 
-    public List<SdbSensorAttr> getAttrs() {
-        return attrs;
-    }
-
-    public void setAttrs(List<SdbSensorAttr> attrs) {
-        this.attrs = attrs;
-    }
-
     public List<SdbChannelInfo> getChannels() {
         return channels;
     }
 
     public void setChannels(List<SdbChannelInfo> channels) {
         this.channels = channels;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SdbSensorInfo that = (SdbSensorInfo) o;
-
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return type != null ? type.equals(that.type) : that.type == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
     }
 }

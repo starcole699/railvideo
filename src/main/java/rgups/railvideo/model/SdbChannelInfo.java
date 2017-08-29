@@ -11,15 +11,40 @@ public class SdbChannelInfo {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="ID")
     private Long id;
 
-    @Column(name="NAME")
+    @Column(name="NAME", length=64)
     private String name;
 
-    @Column(name="SENSOR_NAME", nullable=false)
-    private String sensorName;
+    @ManyToOne
+    @JoinColumn(name="SENSOR_ID", nullable=false)
+    private SdbSensorInfo sensorInfo;
 
     @Column(name="DESCR")
     private String descr;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public SdbSensorInfo getSensorInfo() {
+        return sensorInfo;
+    }
+
+    public void setSensorInfo(SdbSensorInfo sensorInfo) {
+        this.sensorInfo = sensorInfo;
+    }
+
+    public String getDescr() {
+        return descr;
+    }
+
+    public void setDescr(String descr) {
+        this.descr = descr;
+    }
 }
