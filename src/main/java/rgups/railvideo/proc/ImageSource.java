@@ -104,7 +104,7 @@ public class ImageSource extends ImageProcessor {
     public void capture() {
         if (null == capture) {
             open();
-            flushBuffer();
+            //flushBuffer();
         }
 
         if (null == captureImg) {
