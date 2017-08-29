@@ -3,6 +3,7 @@ package rgups.railvideo.proc;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -13,6 +14,7 @@ import rgups.railvideo.core.RvMat;
 import rgups.railvideo.core.flow.RailvideoEvent;
 import rgups.railvideo.proc.model.ImageProcContext;
 import rgups.railvideo.proc.model.RvFlowProperty;
+import rgups.railvideo.service.ImageStorageService;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -39,6 +41,9 @@ public class ImageSaver extends ImageProcessor {
     @RvFlowProperty
     String format = "jpeg";
 
+    @Autowired
+    ImageStorageService imageStorageService;
+
     @Override
     void processAsync(ImageProcContext.Action action, RailvideoEvent event) {
         LOG.info("Accepted image " + event.frameN + "_" + event.captureId);
@@ -50,12 +55,9 @@ public class ImageSaver extends ImageProcessor {
         lastSaveTime = time;
         RvMat img = action.getImageData();
 
+        imageStorageService.savaMat(img, savePath, event.captureId, "" + event.frameN, format, event.getTimestamp());
+
         showImageOnFrame(img, event);
-
-        String path = prepareImagePath(event);
-
-        LOG.info("Saving frame to: " + path);
-        Imgcodecs.imwrite(path, img);
     }
 
 

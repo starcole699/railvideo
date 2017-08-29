@@ -14,7 +14,7 @@ beans {
     }
 
     rawImageSaver(ImageSaver){
-        savePath = "C:\\railvideo\\frames_raw"
+        savePath = "raw"
         timeInterval = 60000
         accepts = ["rawImageSource->NEW_IMAGE"]
     }
@@ -28,7 +28,7 @@ beans {
     }
 
     grayRawImageSaver(ImageSaver){
-        savePath = "C:\\railvideo\\frames_raw_gray"
+        savePath = "gray"
         timeInterval = 60000
         accepts = ["rgbToGImageConverter->CONVERT_IMAGE"]
     }
@@ -51,7 +51,7 @@ beans {
     }
 
     alarmImageSaver(ImageSaver){
-        savePath = '${rv.alarm.frame_save_path}'
+        savePath = '${rv.alarm.frame_save_path:alarms}'
         timeInterval = -1
         accepts = ["alarm->NEW_ALARM_FRAME"]
     }

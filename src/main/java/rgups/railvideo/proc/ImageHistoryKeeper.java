@@ -42,7 +42,7 @@ public class ImageHistoryKeeper extends ImageProcessor {
         imgQLock.lock();
         RvMat img = action.getImageData();
         String name = event.getCaptureId();
-        imgQ.add(new HistoryRecord(img, name));
+        imgQ.add(new HistoryRecord(img, name, event.getTimestamp()));
         imgQLock.unlock();
     }
 
@@ -66,7 +66,7 @@ public class ImageHistoryKeeper extends ImageProcessor {
             } else {
                 matClone = hr.mat.clone();
             }
-            ret.add(new HistoryRecord(matClone, hr.name));
+            ret.add(new HistoryRecord(matClone, hr.name, hr.time));
         });
         imgQLock.unlock();
         return ret;
@@ -76,10 +76,12 @@ public class ImageHistoryKeeper extends ImageProcessor {
     public class HistoryRecord {
         public Mat mat;
         public String name;
+        public Long time;
 
-        HistoryRecord(Mat mat, String name){
+        HistoryRecord(Mat mat, String name, Long time){
             this.mat = mat;
             this.name = name;
+            this.time = time;
         }
     }
 }

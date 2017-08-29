@@ -1,0 +1,25 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>Сенсор</th>
+        <th>Время</th>
+        <th>Мин</th>
+        <th>Среднее</th>
+        <th>Мах</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each list}}
+    <tr>
+        <td><h4>имя: {{name}}</h4><small>тип: {{type}}, канал: {{channel}}</small></td>
+        <td>{{data.time}}</td>
+        <td>{{data.minValue}}</td>
+        <td>{{data.averageValue}}</td>
+        <td>{{data.maxValue}}</td>
+    </tr>
+    <tr>
+        <td colspan="5"><div id="graph-{{id}}"></div></td>
+    </tr>
+    {{/each}}
+    </tbody>
+</table>

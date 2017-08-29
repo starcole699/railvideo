@@ -8,6 +8,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import rgups.railvideo.core.flow.RailvideoEvent;
 import rgups.railvideo.model.alarms.UiAlarm;
 import rgups.railvideo.model.indicators.FlatSensorData;
+import rgups.railvideo.proc.ImageHistoryKeeper;
 import rgups.railvideo.proc.ImageSource;
 
 /**
@@ -26,7 +27,7 @@ public class SensorProcessor implements BeanNameAware {
     ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired(required=false)
-    ImageSource imageSource;
+    ImageHistoryKeeper imageHistoryKeeper;
 
     @EventListener
     public void acceptEvent(SensorEvent event) {
@@ -89,7 +90,8 @@ public class SensorProcessor implements BeanNameAware {
     public UiAlarm createAlarm(String level, String type, String header, String details) {
         UiAlarm alarm = new UiAlarm(level, type, header, details);
 
-        if (null != imageSource){
+        if (null != imageHistoryKeeper){
+            imageHistoryKeeper.getHistoryCopy();
 
         }
 
