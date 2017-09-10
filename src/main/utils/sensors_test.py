@@ -44,20 +44,20 @@ sensor1 = {"sensor_name": "angle_sensor_1",
                [
                    {
                        "name": "axis_X",
-                       "min_value": -100,
-                       "max_value": 100,
+                       "min_value": 100,
+                       "max_value": 106,
                        "ex_prob":0.05
                    },
                    {
                        "name": "axis_Y",
-                       "min_value": -50,
-                       "max_value": 50,
+                       "min_value": 50,
+                       "max_value": 55,
                        "ex_prob":0.05
                    },
                    {
                        "name": "axis_Z",
-                       "min_value": -30,
-                       "max_value": 30,
+                       "min_value": 30,
+                       "max_value": 40,
                        "ex_prob":0.05
                    }
                ]
@@ -69,20 +69,20 @@ sensor2 = {"sensor_name": "angle_sensor_2",
                [
                    {
                        "name": "axis_X",
-                       "min_value": -200,
-                       "max_value": 200,
+                       "min_value": 200,
+                       "max_value": 210,
                        "ex_prob":0.05
                    },
                    {
                        "name": "axis_Y",
-                       "min_value": -150,
-                       "max_value": 150,
+                       "min_value": 150,
+                       "max_value": 155,
                        "ex_prob":0.05
                    },
                    {
                        "name": "axis_Z",
-                       "min_value": -130,
-                       "max_value": 130,
+                       "min_value": 130,
+                       "max_value": 136,
                        "ex_prob":0.05
                    }
                ]
@@ -153,7 +153,7 @@ def generate_sample():
 
 #
 #print(response)
-for i in range(0, 20):
+for i in range(0, 5):
     j_str = json.dumps(generate_sample())
     print(j_str)
     print('\n\n')

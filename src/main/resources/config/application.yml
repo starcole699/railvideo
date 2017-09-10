@@ -9,6 +9,6 @@ datasource:
     maxPoolSize: 20
     hibernate:
       hbm2ddl.method: update
-      show_sql: true
-      format_sql: true
+      show_sql: false
+      format_sql: false
       dialect: org.hibernate.dialect.MySQLDialect

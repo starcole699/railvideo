@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import rgups.railvideo.model.SavedImage;
 import rgups.railvideo.proc.MatBearer;
@@ -33,16 +35,18 @@ public class ImageStorageService {
     @Value("${rv.image_storage_root}")
     String saveRootPath;
 
-    @Transactional
-    public boolean savaMat(Mat mat, String path, String captureId, String postfix, String saveFormat, Long captureTime) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Cacheable(sync = true, cacheNames="storage_service_save_image",
+            key="#path + \"_\" + #captureId + #postfix + #saveFormat + #captureTime")
+    public synchronized SavedImage saveOrFindMat(Mat mat, String path, String captureId, String postfix, String saveFormat, Long captureTime) {
         String relPath = composeDbFileName(path, captureId, postfix);
         List<SavedImage> existingImg = imagesRepo.findByFileName(relPath);
         if (existingImg.size() > 0) {
-            return false;
+            return existingImg.get(0);
         }
 
         String format = saveFormat;
-        if ((null == saveFormat) && (saveFormat.trim().length() == 0)) {
+        if ((null == saveFormat) || (saveFormat.trim().length() == 0)) {
             format = defaultFormat;
         } else {
             format = saveFormat.trim();
@@ -61,7 +65,7 @@ public class ImageStorageService {
 
         imagesRepo.saveAndFlush(sImg);
 
-        return true;
+        return sImg;
     }
 
     public String composeDbFileName(String path, String captureId, String postfix) {

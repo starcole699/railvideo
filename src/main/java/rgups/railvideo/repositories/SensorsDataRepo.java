@@ -9,6 +9,6 @@ import rgups.railvideo.model.SdbSensorData;
  * Created by Dmitry on 27.07.2017.
  */
 @Repository
-@RepositoryRestResource(collectionResourceRel = "sensorslog", path = "sensorslog")
+@RepositoryRestResource(collectionResourceRel = "sensors", path = "sensors")
 public interface  SensorsDataRepo extends JpaRepository<SdbSensorData, Long> {
 }

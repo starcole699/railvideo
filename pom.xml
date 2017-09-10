@@ -169,6 +169,12 @@
         </dependency>
 
         <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-core</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython-standalone</artifactId>
             <version>2.7.1b2</version>

@@ -8,14 +8,18 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import rgups.railvideo.model.Frame;
+import rgups.railvideo.utils.RvRuntimeException;
 
 import javax.annotation.PostConstruct;
 import javax.script.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dmitry on 27.07.2017.
@@ -24,6 +28,8 @@ import java.util.Map;
 public class ScriptSensorProcessor extends SensorProcessor implements ResourceLoaderAware {
 
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+
+    private Logger SCRIPT_LOG = LoggerFactory.getLogger("SCRIPT_" + this.getClass().getName());
 
     String language;
 
@@ -39,6 +45,9 @@ public class ScriptSensorProcessor extends SensorProcessor implements ResourceLo
 
     @PostConstruct
     public void init() throws IOException {
+        SCRIPT_LOG = LoggerFactory.getLogger("SCRIPT_" + this.getClass().getName() + "_" + language);
+        prepareEnginesPaths();
+
         ScriptEngineManager manager = new ScriptEngineManager();
         engine = manager.getEngineByName(language);
         if (null == engine) {
@@ -62,15 +71,52 @@ public class ScriptSensorProcessor extends SensorProcessor implements ResourceLo
 
         context.setAttribute("conf", conf, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("host", this, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("slog", SCRIPT_LOG,  ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("data", event.getData(),  ScriptContext.ENGINE_SCOPE);
         context.setWriter(writer);
 
         // TODO:
         try {
             engine.eval(code, context);
         } catch (ScriptException e) {
-            e.printStackTrace();
+            LOG.error("Error ", e);
         }
-        System.out.println(writer.toString());
+    }
+
+    public void prepareEnginesPaths() {
+        if(language.toLowerCase().startsWith("py")){
+            String path = getSourceFolder();
+            if (null == path) return;
+
+            Set<String> paths = new HashSet<>();
+            String pPath = System.getProperty("python.path", null);
+            if(null != pPath){
+                String[] splittedPaths = pPath.split(Pattern.quote(File.pathSeparator));
+                paths.addAll(Arrays.asList(splittedPaths));
+            }
+            paths.add(path);
+            String newPropVal = paths.stream()
+                    .map(s -> s.trim())
+                    .collect(Collectors.joining(File.pathSeparator));
+
+            LOG.info("python.path set to " + newPropVal);
+
+            System.setProperty("python.path", newPropVal);
+        }
+    }
+
+    public String getSourceFolder() {
+        if (null == source) {
+            return null;
+        }
+
+        Resource res = resourceLoader.getResource(source);
+        try {
+            return res.getFile().getParentFile().getAbsolutePath();
+        } catch (Exception e) {
+            LOG.error("Can't get resource's folder: " + source, e);
+            return null;
+        }
     }
 
 

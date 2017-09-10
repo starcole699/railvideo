@@ -1,5 +1,7 @@
 package rgups.railvideo.model;
 
+import org.opencv.core.Mat;
+
 import javax.persistence.*;
 import java.util.Date;
 

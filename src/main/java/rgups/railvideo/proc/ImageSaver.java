@@ -55,7 +55,7 @@ public class ImageSaver extends ImageProcessor {
         lastSaveTime = time;
         RvMat img = action.getImageData();
 
-        imageStorageService.savaMat(img, savePath, event.captureId, "" + event.frameN, format, event.getTimestamp());
+        imageStorageService.saveOrFindMat(img, savePath, event.captureId, "" + event.frameN, format, event.getTimestamp());
 
         showImageOnFrame(img, event);
     }

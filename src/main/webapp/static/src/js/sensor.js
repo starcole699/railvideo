@@ -906,5 +906,7 @@ function render(data) {
 $(function () {
   //table = Handlebars.getTemplate('table');
   table = Handlebars.getTemplate('sensor')
-  setInterval($.get('/sensors/stats', render), 5000);
+  setInterval(function() {$.get('/sensors/stats',
+      function (data) {render(data)})
+      }, 5000);
 });

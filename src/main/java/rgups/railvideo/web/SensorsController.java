@@ -39,12 +39,12 @@ public class SensorsController {
     public ResponseEntity<String> addSensorsReadings(@RequestBody Statistics statistics) {
         LOG.info("Accepted statistics: " + statistics);
         List<FlatSensorData> sensorsData = statistics.getFlatteredData();
+        sensorStatsService.addData(sensorsData);
         for(FlatSensorData fsd : sensorsData){
             LOG.info(fsd.toString());
             SensorEvent evt = new SensorEvent(this, fsd);
             applicationEventPublisher.publishEvent(evt);
         }
-        sensorStatsService.addData(sensorsData);
         return new ResponseEntity<>("Thanks", HttpStatus.OK);
     }
 

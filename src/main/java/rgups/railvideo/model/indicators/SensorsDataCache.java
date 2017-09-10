@@ -43,4 +43,8 @@ public class SensorsDataCache {
     public Map<ChannelHeader, SortedSet<ChannelValue>> getCache() {
         return cache;
     }
+
+    public synchronized List<ChannelValue> getChannelHistory(String sensorName, String channelName){
+        return null;
+    }
 }
