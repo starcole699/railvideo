@@ -55,4 +55,14 @@ public class SavedImage {
     public void setExtension(String extension) {
         this.extension = extension;
     }
+
+    @Override
+    public String toString() {
+        return "SavedImage{" +
+                "id=" + id +
+                ", fileName='" + fileName + '\'' +
+                ", extension='" + extension + '\'' +
+                ", captureTime=" + captureTime +
+                '}';
+    }
 }
