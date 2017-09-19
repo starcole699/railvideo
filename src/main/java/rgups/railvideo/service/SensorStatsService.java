@@ -1,9 +1,12 @@
 package rgups.railvideo.service;
 
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import rgups.railvideo.core.memdata.SensorsMinMaxTracker;
 import rgups.railvideo.model.SdbChannelInfo;
 import rgups.railvideo.model.SdbSensorData;
 import rgups.railvideo.model.SdbSensorInfo;
@@ -36,10 +39,32 @@ public class SensorStatsService {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Value("${rv.sensors.track_period_sec:3600}")
+    long sensorsTrackPeriodSec;
+
+    @Value("${rv.sensors.buffer_size:1024}")
+    int sensorsBufSize;
+
+    SensorsMinMaxTracker<Double> minMaxTracker;
+
     SensorsDataCache cache = new SensorsDataCache();
 
     public void addData(List<FlatSensorData> dataList){
         cache.addValues(dataList);
+
+        if (null == minMaxTracker){
+            synchronized (this) {
+                if (null == minMaxTracker) {
+                    minMaxTracker = new SensorsMinMaxTracker<>(Double.class, sensorsBufSize, sensorsTrackPeriodSec * 1000);
+                }
+            }
+        }
+
+        for (FlatSensorData fsd : dataList) {
+            minMaxTracker.addValues(fsd.getSensorName() + "_" + fsd.getChannel(),
+                    fsd.getEndTime(), fsd.getMaxValue(), fsd.getMinValue());
+        }
+
         for (FlatSensorData fsd : dataList) {
             saveSensorReading(fsd);
         }
@@ -48,6 +73,21 @@ public class SensorStatsService {
     public Map<?, ?> getSensorsStats() {
         Map<ChannelHeader, SortedSet<ChannelValue>> rawStat = cache.getCache();
         return rawStat;
+    }
+
+    public Pair<Double, Pair<Long, Long>> getDeltaFor(String sensorName, String channnelName) {
+        Pair<Double, Pair<Long, Long>> ret = minMaxTracker.getMaxDiff(sensorName + "_" + channnelName);
+        return ret;
+    }
+
+    public Pair<Double, Long> getMaxPair(String sensorName, String channnelName) {
+        Pair<Double, Long> ret = minMaxTracker.getMaxPair(sensorName + "_" + channnelName);
+        return ret;
+    }
+
+    public Pair<Double, Long> getMinPair(String sensorName, String channnelName) {
+        Pair<Double, Long> ret = minMaxTracker.getMinPair(sensorName + "_" + channnelName);
+        return ret;
     }
 
     @Transactional
@@ -105,4 +145,19 @@ public class SensorStatsService {
         return newChannel;
     }
 
+    public long getSensorsTrackPeriodSec() {
+        return sensorsTrackPeriodSec;
+    }
+
+    public void setSensorsTrackPeriodSec(long sensorsTrackPeriodSec) {
+        this.sensorsTrackPeriodSec = sensorsTrackPeriodSec;
+    }
+
+    public int getSensorsBufSize() {
+        return sensorsBufSize;
+    }
+
+    public void setSensorsBufSize(int sensorsBufSize) {
+        this.sensorsBufSize = sensorsBufSize;
+    }
 }

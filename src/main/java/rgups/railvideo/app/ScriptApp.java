@@ -24,7 +24,7 @@ public class ScriptApp {
             "    host.alarm(str(i))\n" +
             "    logging.info(i)\n" +
             "print(frame)\n" +
-            "frame.path = 'Путь!'.decode('utf-8')";
+            "frame.path = ('Путь! %s ' + ('sensor_8')).decode('utf-8')";
 
     static String pycode2 =
             "from rgups.railvideo.model.alarms import UiAlarm\n" +
@@ -53,7 +53,7 @@ public class ScriptApp {
         context.setWriter(writer); //configures output redirection
         ScriptEngine engine = manager.getEngineByName("python");
         System.out.println();
-        engine.eval(pycode2, context);
+        engine.eval(pycode, context);
         System.out.println(writer.toString());
         System.out.println(frame.getPath());
     }

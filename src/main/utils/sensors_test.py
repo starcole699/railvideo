@@ -129,8 +129,8 @@ def generate_sample():
                 ex_prob = ch.get('ex_prob', 0.1)
                 min_cap = ch['min_value']
                 max_cap = ch['max_value']
-                min_cap = min_cap * (1+ex_prob*sign(min_cap))
-                max_cap = max_cap * (1-ex_prob*sign(max_cap))
+                min_cap = min_cap * (1-ex_prob*sign(min_cap))
+                max_cap = max_cap * (1+ex_prob*sign(max_cap))
                 avg = random.uniform(min_cap, max_cap)
                 min = random.uniform(min_cap, avg)
                 max = random.uniform(avg, max_cap)

@@ -1,8 +1,12 @@
 package rgups.railvideo.core.memdata;
 
 import javafx.util.Pair;
+import rgups.railvideo.utils.RvRuntimeException;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,8 +23,18 @@ public class SensorsMinMaxTracker<T extends Number & Comparable<T>> {
 
     Class<T> valueClass;
 
+    Comparator<T> comp = new Comparator<T>() {
+        public int compare(T a, T b) { return a.compareTo(b); }
+    };
+
     public SensorsMinMaxTracker(Class<T> valueClass) {
         this.valueClass = valueClass;
+    }
+
+    public SensorsMinMaxTracker(Class<T> valueClass, int bufSize, long bufDuration) {
+        this.valueClass = valueClass;
+        this.bufSize = bufSize;
+        this.bufDuration = bufDuration;
     }
 
     public void addValue(String sensorId, long ts, T value) {
@@ -28,7 +42,12 @@ public class SensorsMinMaxTracker<T extends Number & Comparable<T>> {
         addValue(sensorId, ts, value, MAX);
     }
 
-    public Pair<T, Pair<Long, Long>> getMaxDistance(String sensorId) {
+    public void addValues(String sensorId, long ts, T value1, T value2) {
+        addValue(sensorId, ts, min(value1, value2), MIN);
+        addValue(sensorId, ts, min(value1, value2), MAX);
+    }
+
+    public Pair<T, Pair<Long, Long>> getMaxDiff(String sensorId) {
         Pair<T, Long> minPair = getMinPair(sensorId);
         Pair<T, Long> maxPair = getMaxPair(sensorId);
         if ((minPair == null)&&(maxPair == null)) {
@@ -40,15 +59,15 @@ public class SensorsMinMaxTracker<T extends Number & Comparable<T>> {
             return new Pair<T, Pair<Long, Long>>(p.getKey(), new Pair<Long, Long>(p.getValue(), p.getValue()));
         }
 
-        Double diff = Math.abs(maxPair.getKey().doubleValue() - minPair.getKey().doubleValue());
         try {
-            Constructor<T> constr = valueClass.getConstructor(Double.class);
-            constr.
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            BigDecimal diff = new BigDecimal(maxPair.getKey().toString())
+                    .subtract(new BigDecimal(minPair.getKey().toString())).abs();
+            Constructor<T> constr = valueClass.getConstructor(String.class);
+            T diffVal = constr.newInstance(diff.toString());
+            return new Pair<T, Pair<Long, Long>>(diffVal, new Pair<Long, Long>(minPair.getValue(), maxPair.getValue()));
+        } catch (Exception  e) {
+            throw new RvRuntimeException("Can't find min max pair. ", e);
         }
-
-        return new Pair<T, Pair<Long, Long>>(p.getKey(), new Pair<Long, Long>(p.getValue(), p.getValue()));
     }
 
     public Pair<T, Long> getMinPair(String sensorId) {
@@ -76,6 +95,8 @@ public class SensorsMinMaxTracker<T extends Number & Comparable<T>> {
                 records = data.get(key);
                 if (null == records) {
                     records = new RankedTimeSeries<T>(valueClass, idPrefix == MIN);
+                    records.setBufSize(bufSize);
+                    records.setBufPeriod(bufDuration);
                     data.put(key, records);
                 }
             }
@@ -107,4 +128,7 @@ public class SensorsMinMaxTracker<T extends Number & Comparable<T>> {
         }
         return null;
     }
+
+    public T min(T a, T b) { return a.compareTo(b) < 0 ? a : b; }
+    public T max(T a, T b) { return a.compareTo(b) > 0 ? a : b; }
 }

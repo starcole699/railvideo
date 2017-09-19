@@ -60,9 +60,30 @@ public class UiAlarm extends DbAlarm {
         this.alarmUid = alarmUid;
     }
 
+    public void setUidFrom(Object...o){
+        String str = Arrays.stream(o)
+                .map(x -> x.toString())
+                .sorted()
+                .collect(Collectors.joining("__"));
+        setAlarmUid(str);
+    }
+
     public String createUid(Object...items){
         String uid = Arrays.stream(items).map(x -> x.toString()).sorted().collect(Collectors.joining("--"));
         this.alarmUid = uid;
         return uid;
+    }
+
+    @Override
+    public String toString() {
+        return "UiAlarm{" +
+                "value=" + value +
+                ", alarmUid='" + alarmUid + '\'' +
+                ", level='" + level + '\'' +
+                ", type='" + type + '\'' +
+                ", header='" + header + '\'' +
+                ", descr='" + descr + '\'' +
+                ", details='" + details + '\'' +
+                '}';
     }
 }

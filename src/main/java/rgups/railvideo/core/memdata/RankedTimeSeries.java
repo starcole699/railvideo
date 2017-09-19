@@ -130,6 +130,17 @@ public class RankedTimeSeries<T> {
         return top.val;
     }
 
+    public T getTopValueSince(long startTime) {
+        Pair<T, Long> pair = getTopPairSince(startTime);
+
+        if(null == pair) {
+            return null;
+        }
+
+        return pair.getKey();
+    }
+
+
     public Pair<T, Long> getTopPair() {
         if (null == top){
             return null;
@@ -137,6 +148,25 @@ public class RankedTimeSeries<T> {
 
         return new Pair(top.val, top.time);
     }
+
+
+    public Pair<T, Long> getTopPairSince(long startTime) {
+        RankedTsRecord<T> cur = top;
+        if (null == cur){
+            return null;
+        }
+
+        while((cur!=null)&&(cur.time < startTime)) {
+            cur = cur.nextTop;
+        }
+
+        if(null == cur) {
+            return null;
+        }
+
+        return new Pair(top.val, top.time);
+    }
+
 
     class NaturalComparator<T extends Comparable<T>> implements Comparator<T> {
         public int compare(T a, T b) {

@@ -12,3 +12,10 @@ datasource:
       show_sql: false
       format_sql: false
       dialect: org.hibernate.dialect.MySQLDialect
+
+rv:
+  sensors:
+    track_period_sec: 3600
+    buffer_size: 1024
+  alarms:
+    alarm_lifetime_sec: 10

@@ -111,8 +111,21 @@ public class SensorProcessor implements BeanNameAware {
         return createAlarm(new Date(), DbAlarm.AL_ERROR, DbAlarm.AT_BUSINESS, header);
     }
 
+    public UiAlarm newWarning(String header, String type){
+        return createAlarm(new Date(), DbAlarm.AL_WARNING, type, header);
+    }
+
+    public UiAlarm newError(String header, String type){
+        return createAlarm(new Date(), DbAlarm.AL_ERROR, type, header);
+    }
+
     public UiAlarm createAlarm(Date time, String level, String type, String header) {
-        UiAlarm ret = alarmService.createAlarmWithCurrentImages(time, level, type, header);
+        UiAlarm ret = alarmService.createAlarm(time, level, type, header);
+        return ret;
+    }
+
+    public UiAlarm createAlarm(String level, String type, String header) {
+        UiAlarm ret = createAlarm(new Date(), level, type, header);
         return ret;
     }
 

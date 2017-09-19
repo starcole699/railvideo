@@ -3,11 +3,13 @@ package rgups.railvideo.proc.sensors;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import rgups.railvideo.model.Frame;
+import rgups.railvideo.service.SensorStatsService;
 import rgups.railvideo.utils.RvRuntimeException;
 
 import javax.annotation.PostConstruct;
@@ -43,6 +45,9 @@ public class ScriptSensorProcessor extends SensorProcessor implements ResourceLo
 
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    private SensorStatsService sensorStatsService;
+
     @PostConstruct
     public void init() throws IOException {
         SCRIPT_LOG = LoggerFactory.getLogger("SCRIPT_" + this.getClass().getName() + "_" + language);
@@ -73,13 +78,19 @@ public class ScriptSensorProcessor extends SensorProcessor implements ResourceLo
         context.setAttribute("host", this, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("slog", SCRIPT_LOG,  ScriptContext.ENGINE_SCOPE);
         context.setAttribute("data", event.getData(),  ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("stats", sensorStatsService,  ScriptContext.ENGINE_SCOPE);
+
         context.setWriter(writer);
 
         // TODO:
         try {
             engine.eval(code, context);
         } catch (ScriptException e) {
-            LOG.error("Error ", e);
+            if (e.getMessage().contains("SystemExit:")){
+                LOG.debug("Script exit.");
+            } else {
+                LOG.error("Error ", e);
+            }
         }
     }
 
