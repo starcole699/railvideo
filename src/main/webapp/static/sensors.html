@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Показания датчиков</title>
+
+    <link href="./lib/highcharts-ng/dist/highcharts-ng.css" rel="stylesheet"/>
+    <script type="text/javascript" src="./lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="./lib/angular-resource/angular-resource.min.js"></script>
+    <script type="text/javascript" src="./lib/angular-spring-data-rest/dist/angular-spring-data-rest.min.js"></script>
+    <script type="text/javascript" src="./lib/lodash/dist/lodash.min.js"></script>
+    <!--script type="text/javascript" src="./lib/highcharts/highcharts.js"></script-->
+    <script type="text/javascript" src="./lib/highcharts/highstock.src.js"></script>
+    <script type="text/javascript" src="./lib/highcharts-ng/dist/highcharts-ng.js"></script>
+
+    <style type="text/css">
+        td.container > div {
+            width: 100%;
+            height: 100%;
+            overflow:hidden;
+        }
+        td.container {
+            height: 120px;
+        }
+
+        .sensor_value, .max_value, .min_value, .avg_value {
+            font-family: Arial, Helvetica, Verdana, sans-serif;
+            font-size: 18px;
+        }
+
+        .max_value { .sensor_value;  color: #AA0000;  }
+        .min_value { .sensor_value;  color: #9070AA;  }
+        .avg_value { .sensor_value;  color: #AA6000;  }
+
+
+    </style>
+</head>
+
+
+<body>
+
+<script>
+    var app = angular.module('sensorsApp', ["ngResource", "highcharts-ng"]);
+
+    var sensor_type_names = {
+        "angle_sensor":   "Угловой датчик",
+        "optical_sensor": "Датчик разрыва линии",
+        "security_sensor":   "Сигнализация",
+    }
+    function sensorTypeToStr(sensor_typename) {
+        ret = sensor_type_names[sensor_typename] || sensor_typename;
+        return ret
+    }
+
+    app.controller('sensorsController', function($scope, $http, $timeout) {
+
+        $scope.refreshCharts = function(){
+            if ($scope.hasOwnProperty('chartConfigs')) {
+                chartConfigs = $scope.chartConfigs;
+            } else {
+                chartConfigs = {title:"TITLE"}
+            }
+            for (var key in $scope.sensors) {
+                newConfig = {
+                    chart: {
+                        type: 'spline',
+                        height: 120,
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    xAxis: { type: 'datetime' },
+                    yAxis: {
+                        title: {
+                            text: null,
+                        },
+                        endOnTick: false,
+                        startOnTick: false,
+                    },
+                    series: [{
+                    }],
+                    title: {text:''},
+                    legend: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        spline: {
+                            marker: {
+                                enabled: false
+                            },
+                            lineWidth: 3,
+                        }
+                    }
+                };
+
+                if ($scope.sensors.hasOwnProperty(key)) {
+                    row = $scope.sensors[key].values;
+                    min_data = [];
+                    max_data = [];
+                    avg_data = [];
+                    for (var n in $scope.sensors[key].values){
+                        min_data.push([row[n].endTime, row[n].minValue]);
+                        max_data.push([row[n].endTime, row[n].maxValue]);
+                        avg_data.push([row[n].endTime, row[n].averageValue])
+                    }
+                    newConfig.series = [{id: "min", color: '#9070AA', data: min_data},
+                                        {id: "max", color: '#AA0000', data: max_data},
+                                        {id: "avg", color: '#AA6000', data: avg_data}];
+                }
+
+                chartConfigs[key] = newConfig;
+            }
+            $scope.chartConfigs = chartConfigs;
+
+            //console.log(chartConfigs);
+                $scope.chartConfig.series = [{
+                    data: [[1, Math.random()*10], [2,Math.random()*10], [8,Math.random()*10],
+                        [11, Math.random()*10], [22,Math.random()*10]],
+                    id: 'series1'
+                }];
+        };
+
+        $scope.getData = function(){
+            $http.get('/sensors/stats').
+            success(function(data, status, headers, config) {
+                $scope.sensors = data;
+                $scope.refreshCharts();
+                for (var n in $scope.sensors){
+                    $scope.sensors[n].chart = $scope.chartConfigs[n];
+                    $scope.sensors[n].sensor_type_name = sensorTypeToStr($scope.sensors[n].sensor_type)
+                }
+                //$scope.refreshCharts();
+            }).
+            error(function($data, status, $headers, config) {
+                alert("error getting data");
+            });
+        };
+
+        $scope.intervalFunction = function(){
+            $timeout(function() {
+                $scope.getData();
+                $scope.intervalFunction();
+            }, 1000)
+        };
+
+        $scope.chartConfig = function(data) {
+            //console.log(data);
+            return {
+            chart: {
+                type: 'line'
+            },
+            series: [{
+                data: [Math.random()*10, Math.random()*10, Math.random()*10, Math.random()*10, Math.random()*10],
+                id: 'series1'
+            }],
+            title: {
+                text: 'rrrr'
+            }
+        }};
+
+        // Kick off the interval
+        $scope.intervalFunction();
+    });
+
+</script>
+<div ng-app="sensorsApp">
+    <div ng-controller="sensorsController">
+        <table>
+            <tr ng-repeat="(sensor_id, sensor) in sensors", id="{{sensor_id}}">
+                <td class="container">
+                    <span class="sensor_value", style="font-weight:bold;">{{sensor.sensor_type_name}}</span><br/>
+                    <span class="sensor_value", style="">{{sensor.sensor_name}} : {{sensor.channel_name}}</span><br/>
+                </td>
+                <td class="container">
+                    <span class="min_value", style="opacity: 1.0;font-weight:bold;">Мин.:</span><br/>
+                    <span class="min_value", style="opacity: 1.0;">{{sensor.values[sensor.values.length - 1].minValue}}</span><br/>
+                    <span class="min_value", style="opacity: 0.8;">{{sensor.values[sensor.values.length - 2].minValue}}</span><br/>
+                    <span class="min_value", style="opacity: 0.6;">{{sensor.values[sensor.values.length - 3].minValue}}</span><br/>
+                </td>
+                <td class="container">
+                    <span class="avg_value", style="opacity: 1.0;font-weight:bold;">Средн.:</span><br/>
+                    <span class="avg_value", style="opacity: 1.0;">{{sensor.values[sensor.values.length - 1].averageValue}}</span><br/>
+                    <span class="avg_value", style="opacity: 0.8;">{{sensor.values[sensor.values.length - 2].averageValue}}</span><br/>
+                    <span class="avg_value", style="opacity: 0.6;">{{sensor.values[sensor.values.length - 3].averageValue}}</span><br/>
+                </td>
+                <td class="container">
+                    <span class="max_value", style="opacity: 1.0;font-weight:bold;">Макс.:</span><br/>
+                    <span class="max_value", style="opacity: 1.0;">{{sensor.values[sensor.values.length - 1].maxValue}}</span><br/>
+                    <span class="max_value", style="opacity: 0.8;">{{sensor.values[sensor.values.length - 2].maxValue}}</span><br/>
+                    <span class="max_value", style="opacity: 0.6;">{{sensor.values[sensor.values.length - 3].maxValue}}</span><br/>
+                </td>
+                <td class="container">
+                    <highchart config="sensor.chart">
+                    </highchart>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
