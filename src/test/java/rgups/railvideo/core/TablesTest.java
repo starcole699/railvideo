@@ -5,10 +5,19 @@ import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.FloatColumn;
 import tech.tablesaw.api.Table;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TablesTest {
 
     @Test
     public void testOne() throws InterruptedException {
+        Map<Integer, String> HOSTING = new HashMap<>();
+        HOSTING.put(1, "linode.com");
+        HOSTING.put(2, "heroku.com");
+        HOSTING.put(3, "digitalocean.com");
+        HOSTING.put(4, "aws.amazon.com");
+
         Table table = Table.create("t");
         FloatColumn floatColumn = new FloatColumn("f1");
         DoubleColumn doubleColumn = new DoubleColumn("d1");

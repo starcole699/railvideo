@@ -1,0 +1,14 @@
+{
+  "name": "TimelineJS",
+  "homepage": "https://github.com/VeriteCo/TimelineJS",
+  "version": "2.32.0",
+  "_release": "2.32.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.32.0",
+    "commit": "62798c9a1596420c715af8c296bacc97e02a7b07"
+  },
+  "_source": "https://github.com/VeriteCo/TimelineJS.git",
+  "_target": "~2.32.0",
+  "_originalSource": "TimelineJS"
+}

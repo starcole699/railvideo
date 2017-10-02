@@ -8,13 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rgups.railvideo.model.indicators.ChannelHeader;
+import rgups.railvideo.model.indicators.ChannelValue;
 import rgups.railvideo.model.indicators.FlatSensorData;
 import rgups.railvideo.model.indicators.Statistics;
 import rgups.railvideo.proc.sensors.SensorEvent;
 import rgups.railvideo.service.SensorStatsService;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Dmitry on 19.07.2017.
@@ -54,8 +55,20 @@ public class SensorsController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public @ResponseBody Map<?, ?> getSensorsStats() {
-        return sensorStatsService.getSensorsStats();
+    public @ResponseBody Map<String, Object> getSensorsStats() {
+        Map<ChannelHeader, SortedSet<ChannelValue>> stats = sensorStatsService.getSensorsStats();
+        Map<String, Object> ret = new TreeMap<>();
+        for(Map.Entry<ChannelHeader, SortedSet<ChannelValue>> entry : stats.entrySet()){
+            ChannelHeader h = entry.getKey();
+            SortedSet<ChannelValue> vals = entry.getValue();
+            Map<String, Object> row = new HashMap();
+            row.put("sensor_type", h.getSensorType());
+            row.put("sensor_name", h.getSensorName());
+            row.put("channel_name", h.getChannel());
+            row.put("values", vals);
+            ret.put(h.getSensorType() + "__" + h.getSensorName() + "__" + h.getChannel(), row);
+        }
+        return ret;
     }
 
 

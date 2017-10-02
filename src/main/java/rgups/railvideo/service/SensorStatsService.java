@@ -70,7 +70,7 @@ public class SensorStatsService {
         }
     }
 
-    public Map<?, ?> getSensorsStats() {
+    public Map<ChannelHeader, SortedSet<ChannelValue>> getSensorsStats() {
         Map<ChannelHeader, SortedSet<ChannelValue>> rawStat = cache.getCache();
         return rawStat;
     }

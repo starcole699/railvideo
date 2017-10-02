@@ -88,20 +88,47 @@ sensor2 = {"sensor_name": "angle_sensor_2",
                ]
            }
 
-sensor3 = {"sensor_name": "door_sensor_1",
-           "sensor_type": "door_sensor",
+sensor3 = {"sensor_name": "security_sensor_1",
+           "sensor_type": "security_sensor",
            "channels":
                [
                    {
-                       "name": "door_1",
+                       "name": "security_channel1",
                        "min_value": 0,
                        "max_value": 1,
-                       "rnd_values":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+                       "rnd_values":[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
                    }
                ]
            }
 
-sensors = (sensor1, sensor2, sensor3)
+sensor4 = {"sensor_name": "security_sensor_2",
+           "sensor_type": "security_sensor",
+           "channels":
+               [
+                   {
+                       "name": "security_channel2",
+                       "min_value": 0,
+                       "max_value": 1,
+                       "rnd_values":[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+                   }
+               ]
+           }
+
+sensor5 = {"sensor_name": "optical_sensor",
+           "sensor_type": "optical_sensor",
+           "channels":
+               [
+                   {
+                       "name": "optical_channel",
+                       "min_value": 0,
+                       "max_value": 1,
+                       "rnd_values":[1,0,0]
+                   }
+               ]
+           }
+
+sensors = (sensor1, sensor2, sensor3, sensor4, sensor5)
+
 
 prev_time = time.time()
 
@@ -153,7 +180,7 @@ def generate_sample():
 
 #
 #print(response)
-for i in range(0, 5):
+for i in range(0, 150):
     j_str = json.dumps(generate_sample())
     print(j_str)
     print('\n\n')

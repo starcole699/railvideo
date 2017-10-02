@@ -1,5 +1,6 @@
 package rgups.railvideo.model.alarms;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.util.ReflectionUtils;
 import rgups.railvideo.model.SavedImage;
 
@@ -34,6 +35,7 @@ public class DbAlarm {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @JsonProperty("alarm_id")
     private Long id;
 
     @Column(name="TIME", nullable=false)
@@ -142,5 +144,10 @@ public class DbAlarm {
 
     public void setImages(List<SavedImage> images) {
         this.images = images;
+    }
+
+    @JsonProperty("aud")
+    public Long getAud(){
+        return getId();
     }
 }

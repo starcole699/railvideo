@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Timeline JS Example</title>
+    <meta charset="utf-8">
+    <meta name="description" content="TimelineJS example">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+<link title="timeline-styles" rel="stylesheet" href="/static/lib/TimelineJS3/compiled/css/timeline.css">
+<script src="/static/lib/TimelineJS3/compiled/js/timeline.js"></script>
+<script src="/static/lib/jquery/dist/jquery.js"></script>
+<script src="/static/lib/moment/moment.js"></script>
+<div id='timeline-embed' style="width: 100%; height: 600px"></div>
+
+<script type="text/javascript">
+    var last_update = null;
+    jQuery.ajaxSetup({async:false});
+
+    active_alalrms = [];
+
+    ts_json = {
+        "events" : []
+    };
+
+    timeline = null;
+
+    //$.get( "/static/lib/TimelineJS3/compiled/examples/marktwain.json", function( data ) {
+    //self.ts_json = data;
+    //});
+
+    function init_timeline(config_json) {
+        this.timeline = new TL.Timeline('timeline-embed', config_json);
+        console.log("timeline initialized", timeline)
+    }
+
+
+    new_event = {
+        "start_date": {
+            "year":			"2900",
+            "month":		"01",
+            "day": 			"05",
+            "hour": 		"",
+            "minute": 		"",
+            "second": 		"",
+            "millisecond": 	"",
+            "format": 		""
+        },
+        "headline":"headline headline",
+        "media":
+        {
+            "headline":"headline headline2",
+            "url":"<iframe src='/static/lib/TimelineJS3/compiled/examples/marktwain.json'></iframe>",
+        }
+    };
+
+    function to_event_time(time_str){
+        m = moment(time_str);
+        event_date = {
+            "year" :  m.year(),
+            "month":  m.month(),
+            "day": 	  m.day(),
+            "hour":   m.hour(),
+            "minute": m.minute(),
+            "second": m.second(),
+            "millisecond": 	m.millisecond(),
+            "format": 		""
+        }
+        return event_date;
+    }
+
+    function alarm_to_event(alarm){
+        new_event = {
+            "unique_id": alarm.aud,
+            "start_date": to_event_time(alarm.time),
+            "media": {
+                "url":"<iframe src='/api/alarms/" + alarm.aud + "?projection=fullAlarm' width='100%' height='100%' frameborder='0'></iframe>",
+            }
+        }
+        return new_event;
+    }
+
+    function add_event_to_timeline(event) {
+        console.log(this.timeline);
+        if (null == this.timeline) {
+            config_json = this.ts_json;
+            config_json.events.push(event);
+            init_timeline(config_json);
+        } else {
+            this.timeline.add(event);
+        }
+    }
+
+    function update_alarms() {
+        if (null == self.last_update) {
+            self.last_update = moment().subtract(moment.duration({'h' : 1}));
+        }
+        alarmsUrl = "/api/alarms/search/findByTimeAfterOrderByTime?time=" +
+            encodeURIComponent(self.last_update.format("YYYY-MM-DDTHH:mm:ss.SSSZZ"));
+        $.get(alarmsUrl, function( data ) {
+            console.log(data);
+            for (d in data._embedded.alarms){
+                alarm = data._embedded.alarms[d];
+                new_event = window.alarm_to_event(alarm);
+                console.log(new_event);
+                window.add_event_to_timeline(new_event);
+            }
+        });
+    }
+
+    //timeline.add(new_event);
+    update_alarms();
+    //timeline.goToEnd();
+;
+</script>
+
+</body>
+</html>

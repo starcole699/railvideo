@@ -29,7 +29,6 @@ public class UiAlarm extends DbAlarm {
         super(time, level, type, header);
     }
 
-
     public DbAlarm asDbAlarm(){
         return new DbAlarm(this);
     }
