@@ -29,4 +29,5 @@ beans {
         source = "classpath:/config/sensors_scripts/logical_sensors.py"
         conf = ["name":"value"]
     }
+
 }

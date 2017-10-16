@@ -18,4 +18,4 @@ rv:
     track_period_sec: 3600
     buffer_size: 1024
   alarms:
-    alarm_lifetime_sec: 10
+    alarm_lifetime_sec: 3600

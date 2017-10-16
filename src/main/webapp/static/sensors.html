@@ -132,7 +132,7 @@
                 //$scope.refreshCharts();
             }).
             error(function($data, status, $headers, config) {
-                alert("error getting data");
+                console.error("error getting data");
             });
         };
 
@@ -140,7 +140,7 @@
             $timeout(function() {
                 $scope.getData();
                 $scope.intervalFunction();
-            }, 1000)
+            }, 2500)
         };
 
         $scope.chartConfig = function(data) {

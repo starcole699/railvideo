@@ -42,7 +42,6 @@ public class SensorsController {
         List<FlatSensorData> sensorsData = statistics.getFlatteredData();
         sensorStatsService.addData(sensorsData);
         for(FlatSensorData fsd : sensorsData){
-            LOG.info(fsd.toString());
             SensorEvent evt = new SensorEvent(this, fsd);
             applicationEventPublisher.publishEvent(evt);
         }

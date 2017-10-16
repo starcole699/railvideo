@@ -9,7 +9,7 @@
     "TimelineJS": "~2.32.0",
     "TimelineJS3": "~3.3.0",
     "jquery": "~3.2.1",
-    "moment": "~2.18.1"
-
+    "moment": "~2.18.1",
+    "photoswipe": null
   }
 }

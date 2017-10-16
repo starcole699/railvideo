@@ -15,39 +15,40 @@ data is FlatSensorData:
 """
 
 
-def post_warning(header, descr='', details=''):
-    global host
-    new_warning = host.newWarning(header.decode('utf-8'));
+def post_warning(ctx, header, descr='', details=''):
+    new_warning = ctx['host'].newWarning(header.decode('utf-8'));
     if descr:
         new_warning.descr = descr.decode('utf-8')
 
     if details:
         new_warning.details = details.decode('utf-8')
 
-    host.publishAlarm(new_warning)
+    ctx['host'].publishAlarm(new_warning)
 
-def create_warning(header, descr='', details=''):
-    return create_message(header, DbAlarm.AL_WARNING, descr=descr, details=details)
-
-
-def create_error(header, descr='', details=''):
-    return create_message(header, DbAlarm.AL_ERROR, descr=descr, details=details)
+def create_warning(ctx, header, descr='', details=''):
+    return create_message(ctx, header, DbAlarm.AL_WARNING, descr=descr, details=details)
 
 
-def create_message(header, level, descr='', details=''):
-    global host
-    global data
-    global TYPE
-    new_warning = host.createAlarm(level, TYPE, header.decode('utf-8'));
+def create_error(ctx, header, descr='', details=''):
+    return create_message(ctx, header, DbAlarm.AL_ERROR, descr=descr, details=details)
+
+
+def create_message(ctx, header, level, descr='', details=''):
+    global slog_g
+    #global host
+    #global s_name_g
+    #global s_type_g
+    #global s_chan_g
+    #global TYPE
+    new_warning = ctx['host'].createAlarm(level, ctx['TYPE'], header.decode('utf-8'))
     if descr:
         new_warning.descr = descr.decode('utf-8')
 
     if details:
         new_warning.details = details.decode('utf-8')
 
-    new_warning.setUidFrom("SN=" + data.sensorName, "CH=" + data.channel)
+    new_warning.setUidFrom("SN=" + ctx['data'].sensorName, "CH=" + ctx['data'].channel)
     return new_warning
 
-def send_alarm(alarm):
-    global host
+def send_alarm(alarm, host):
     host.publishAlarm(alarm)

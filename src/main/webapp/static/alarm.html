@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Событие</title>
+
+    <script type="text/javascript" src="./lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="./lib/angular-resource/angular-resource.min.js"></script>
+    <script type="text/javascript" src="./lib/angular-spring-data-rest/dist/angular-spring-data-rest.min.js"></script>
+    <script type="text/javascript" src="./lib/lodash/dist/lodash.min.js"></script>
+    <script src="/static/lib/moment/moment.js"></script>
+    <script src="/static/lib/moment/locale/ru.js"></script>
+
+    <link rel="stylesheet" href="/static/lib/photoswipe/dist/photoswipe.css">
+    <link rel="stylesheet" href="/static/lib/photoswipe/dist/default-skin/default-skin.css">
+    <script src="/static/lib/photoswipe/dist/photoswipe.js"></script>
+    <script src="/static/lib/photoswipe/dist/photoswipe-ui-default.js"></script>
+
+    <style type="text/css">
+        .screenshotLinkContainer {
+            width: 120px;
+            height: 80px;
+            cursor: pointer;
+            /*border: 1px solid black;*/
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+        .screenshotTextBox {
+            position: absolute;
+            height: 100%;
+            text-align: center;
+            width: 100%;
+        }
+        .screenshotTextBox:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: top;
+        }
+        .screenshotIconImg {
+            display: block;
+            max-width: 100%;
+            object-fit:cover;
+            width:100%;
+            height:100%;
+            opacity:0.3;
+        }
+        .screenshotTimeText {
+            display: inline-block;
+            font-size: 24px; /*or whatever you want*/
+            /*font-family: "Georgia", Times New Roman, Times, serif;*/
+            font-weight: bold;
+            text-shadow: 2px 2px 4px white, 0 0 1em red;
+        }
+        .square h1 {
+            object-fit:cover;width:100%;height:100%;opacity:0.3;position:absolute;
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+
+<div id="alarm_ps" class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides.
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Закрыть (Esc)"></button>
+
+                <button class="pswp__button pswp__button--fs" title="На полный экран"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Увеличить/Уменьшить"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Предыдущий (стрелка влево)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Следующий (стрелка вправо)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    images = {};
+
+    var openPhotoSwipe = function(imgId) {
+        var pswpElement = document.querySelectorAll('.pswp')[0];
+        var psElem = window.parent.document.getElementById('timeline_ps');
+        if(psElem){
+            pswpElement = psElem;
+        };
+
+        var items = [];
+        idx = 0;
+        cnt = 0;
+        for (var img_id in images) {
+            item = {
+                src: '/img/' + img_id,
+                w: 1920,
+                h: 1080,
+                title: images.img_id
+            };
+            items.push(item);
+            if (imgId == img_id) {
+               idx = cnt;
+            };
+            cnt++;
+        }
+
+        var options = {
+            history: false,
+            bgOpacity: 0.8,
+            showAnimationDuration: 0,
+            hideAnimationDuration: 0,
+            index: idx,
+            focus: true
+
+        };
+
+        var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+        gallery.init();
+    };
+
+    var app = angular.module('alarmApp', ["ngResource"]);
+
+    function screenshotClick(imgId){
+        openPhotoSwipe(imgId);
+    }
+
+    function getIdFromLocation(){
+        s = location.search.substring(1, location.search.length);
+        id = parseInt(s);
+        return id;
+    }
+
+    app.controller('alarmController', function($scope, $http, $timeout) {
+
+        $scope.getData = function(){
+            $scope.sampleText = "qwe!!!   loc = " + location.search + " id=" + getIdFromLocation();
+            alarmUrl = "/api/alarms/" + getIdFromLocation() + "?projection=fullAlarm";
+            imgs = {};
+            $http.get(alarmUrl).
+            success(function(data, status, headers, config) {
+                $scope.alarm = data;
+                m = moment($scope.alarm.time);
+                $scope.alarm.localTime = m.format("LLLL");
+                $scope.alarm.localTimeDiff = m.fromNow();
+                for (var key in $scope.alarm.images) {
+                    image = $scope.alarm.images[key]
+                    image.h_time = moment(image.captureTime).format("HH:mm:ss");
+                    imgs[image.id] = image.h_time;
+                }
+            }).
+            error(function($data, status, $headers, config) {
+                console.error("error getting data");
+            });
+            images = imgs;
+        };
+        $scope.getData();
+    });
+
+</script>
+
+
+
+<div ng-app="alarmApp" ng-controller="alarmController">
+    <table>
+        <tr>
+            <td style="width:120px;" align="center" valign="middle">
+                <img src="/static/img/{{alarm.level}}_icon.jpg" style="width:64px;height:64px;"/>
+            </td>
+            <td>
+                <h1>{{alarm.header}}</h1>
+                <span style="font-size: 26px;">{{alarm.localTime}}</span>
+                <span style="font-size: 24px; font-style: italic;"> ({{alarm.localTimeDiff}} ) </span>
+            </td>
+        </tr>
+    </table>
+    <div>
+        <h3>{{alarm.descr}}</h3>
+        <p>{{alarm.details}}</p>
+    </div>
+
+    <div ng-repeat="image in alarm.images" id="{{image.id}}" class="screenshotLinkContainer" onclick="screenshotClick(this.id);">
+        <div class="screenshotTextBox">
+            <p class="screenshotTimeText">{{image.h_time}}</p>
+        </div>
+        <div class="screenshotTextBox" style="alignment: bottom;">
+            <p class="screenshotTimeText" style="font-size: 26px; color:white;"><br/>{{image.extension}}</p>
+        </div>
+        <img class="screenshotIconImg" src="/static/img/i_screenshot.png"/>
+    </div>
+</div>
+
+</body>
+</html>

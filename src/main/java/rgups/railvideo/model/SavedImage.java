@@ -12,7 +12,7 @@ public class SavedImage {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long id;
+    private Long Id;
 
     @Column(name="FILE_NAME")
     private String fileName;
@@ -25,11 +25,11 @@ public class SavedImage {
     private Date captureTime;
 
     public Long getId() {
-        return id;
+        return Id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.Id = id;
     }
 
     public String getFileName() {
@@ -59,7 +59,7 @@ public class SavedImage {
     @Override
     public String toString() {
         return "SavedImage{" +
-                "id=" + id +
+                "id=" + Id +
                 ", fileName='" + fileName + '\'' +
                 ", extension='" + extension + '\'' +
                 ", captureTime=" + captureTime +

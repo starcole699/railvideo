@@ -77,7 +77,7 @@ sensor2 = {"sensor_name": "angle_sensor_2",
                        "name": "axis_Y",
                        "min_value": 150,
                        "max_value": 155,
-                       "ex_prob":0.05
+                       "ex_prob":0.5
                    },
                    {
                        "name": "axis_Z",
@@ -94,9 +94,9 @@ sensor3 = {"sensor_name": "security_sensor_1",
                [
                    {
                        "name": "security_channel1",
-                       "min_value": 0,
+                       "min_value": 1,
                        "max_value": 1,
-                       "rnd_values":[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+                       "rnd_values":[1,1,1,1,1,1,1,1,1,0]
                    }
                ]
            }
@@ -107,9 +107,9 @@ sensor4 = {"sensor_name": "security_sensor_2",
                [
                    {
                        "name": "security_channel2",
-                       "min_value": 0,
+                       "min_value": 1,
                        "max_value": 1,
-                       "rnd_values":[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+                       "rnd_values":[1,1,1,1,1,1,1,1,1,0]
                    }
                ]
            }
@@ -120,14 +120,15 @@ sensor5 = {"sensor_name": "optical_sensor",
                [
                    {
                        "name": "optical_channel",
-                       "min_value": 0,
+                       "min_value": 1,
                        "max_value": 1,
-                       "rnd_values":[1,0,0]
+                       "rnd_values":[1,1,1,1,0]
                    }
                ]
            }
 
 sensors = (sensor1, sensor2, sensor3, sensor4, sensor5)
+#sensors = (sensor4, sensor5)
 
 
 prev_time = time.time()

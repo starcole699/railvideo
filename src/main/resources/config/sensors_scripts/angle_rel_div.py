@@ -1,4 +1,3 @@
-import sys
 import sensors_base
 from datetime import datetime
 from sensors_base import *
@@ -6,9 +5,13 @@ from rgups.railvideo.model.alarms import UiAlarm
 
 TYPE = 'AT_ANGLE_DEV'
 
-sensors_base.host = host
-sensors_base.data = data
-sensors_base.TYPE = TYPE
+sensors_base.slog_g = slog
+
+ctx = {
+    'data' : data,
+    'TYPE' : TYPE,
+    'host' : host
+}
 
 diff = stats.getDeltaFor(data.sensorName, data.channel)
 
@@ -33,7 +36,7 @@ if (diff_val >= conf['error_threshold']):
 
 time_fmt = '%Y-%m-%d %H:%M:%S'
 
-alarm = create_func("Изменение угла канала %s" % data.channel,
+alarm = create_func(ctx, "Изменение угла канала %s" % data.channel,
         descr="Изменение угла канала %s датчика %s за время %sсек. на величину %s" % (
             data.channel, data.sensorName, abs((diff_max_date - diff_min_date)/1000), diff_val
         ), details="Минимальное значение %s зарегистрировано в %s. Максимальное значение %s, зарегистрировано в %s. " % (

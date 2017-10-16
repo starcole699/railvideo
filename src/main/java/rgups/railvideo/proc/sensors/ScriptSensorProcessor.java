@@ -79,9 +79,12 @@ public class ScriptSensorProcessor extends SensorProcessor implements ResourceLo
         context.setAttribute("slog", SCRIPT_LOG,  ScriptContext.ENGINE_SCOPE);
         context.setAttribute("data", event.getData(),  ScriptContext.ENGINE_SCOPE);
         context.setAttribute("stats", sensorStatsService,  ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("s_name", event.getData().getSensorName(),  ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("s_type", event.getData().getSensorType(),  ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("s_chan", event.getData().getChannel(),  ScriptContext.ENGINE_SCOPE);
 
         context.setWriter(writer);
-
+        LOG.error(" *** PROCESSING DATA: " + event.getData());
         // TODO:
         try {
             engine.eval(code, context);
