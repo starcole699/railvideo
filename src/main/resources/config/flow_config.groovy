@@ -10,7 +10,7 @@ import rgups.railvideo.proc.ImageSource
 beans {
 
     rawImageSource(ImageSource, '${rv.video.path}'){
-        capturePeriod = 5000L
+        capturePeriod = 1000L
     }
 
     rawImageSaver(ImageSaver){

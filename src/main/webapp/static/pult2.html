@@ -11,7 +11,8 @@
 
     <style type="text/css">
         body, html {width: 100%; height: 100%; margin: 0; padding: 0}
-        .first-row {position: absolute;top: 0; left: 0; right: 0; height: 550px; background-color: #FFFFFF;}
+        .first-row {position: absolute; display: block; top: 0; left: 0; right: 1100px; height: 550px; width: 1100px; background-color: #FF00FF;}
+        .left-row {position: absolute; display: block; top: 0; left: 1100px; right: 0; height: 550px; background-color: #FF0000;}
         .second-row {position: absolute; top: 550px; left: 0; right: 0; bottom: 0; background-color: #EEEEEE }
         .second-row iframe {display: block; width: 100%; height: 100%; border: none;}
     </style>
@@ -87,13 +88,11 @@
     </div>
 </div>
 
-<div style="position: absolute; z-index: 99; left: 10px; top: 10px;  width: 40px; height: 30px;"> <a href="/static/index.html">
-    <img style="width: 100%; height: 100%" src="/static/img/logo2.png"/>
-</a> </div>
-
 <div class="first-row">
-<div id='timeline-embed' style="width: 100%; height: 550px"></div>
+    <div id='timeline-embed' style="width: 1100px; height: 550px"></div>
+    <!--div style="position: relative; display: block; width: 100px; height: 550px; background-color: #0b68e3"> sdfsdfsfd </div-->
 </div>
+<div class="left-row" style="background-color: #00ff26; padding: 10px;">left</div>
 <div class="second-row">
     <iframe style="width: 100%; height: 100%; min-height: 100%" frameborder='1px' src="sensors.html"></iframe>
 </div>
@@ -126,7 +125,7 @@
         var options = {
             is_embed: true,
             start_at_end: true,
-            //is_full_embed: true,
+            is_full_embed: true,
             //relative_date: true,
             debug: false,
             language: 'ru',
@@ -211,7 +210,7 @@
     }
 
     update_alarms()
-    setInterval(update_alarms, 10000);
+    setInterval(update_alarms, 5000);
     //timeline.add(new_event);
     //timeline.goToEnd();
 

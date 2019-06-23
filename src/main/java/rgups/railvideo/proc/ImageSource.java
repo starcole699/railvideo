@@ -53,7 +53,7 @@ public class ImageSource extends ImageProcessor {
     String captureType = "raw";
 
     @RvFlowProperty
-    Long capturePeriod = 1000L;
+    Long capturePeriod = 10L;
 
     @RvFlowProperty
     @Value("${rv.timezone:Europe/Moscow}")
@@ -100,8 +100,14 @@ public class ImageSource extends ImageProcessor {
         LOG.info("Buffer flushed. " + grabbed + " frames grabbed.");
     }
 
-    @Scheduled(fixedDelay = 2000, initialDelay = 500)
+    @Scheduled(fixedDelay = 10, initialDelay = 500)
     public void capture() {
+        try {
+            Thread.sleep(capturePeriod);
+        } catch (InterruptedException e) {
+            LOG.error("Interrupted ", e);
+        }
+
         if (null == capture) {
             open();
             flushBuffer();
@@ -114,7 +120,9 @@ public class ImageSource extends ImageProcessor {
         }
 
         if (capture.isOpened()) {
+            long t = System.currentTimeMillis();
             capture.grab();
+            LOG.info("  !!  Grab time " + (System.currentTimeMillis() - t));
             capture.retrieve(captureImg);
             if (!captureImg.empty()) {
                 cnt.incrementAndGet();
@@ -134,6 +142,8 @@ public class ImageSource extends ImageProcessor {
                 matSupervisor.releaseFreeMats();
             } else {
                 LOG.error("Captured image is empty.");
+                capture.release();
+                capture = null;
             }
         } else {
             LOG.error("Image source is not opened.");

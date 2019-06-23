@@ -13,6 +13,7 @@ import rgups.railvideo.proc.model.ImageProcContext;
 import rgups.railvideo.proc.model.RvFlowProperty;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,7 +34,10 @@ public class ImageHistoryKeeper extends ImageProcessor {
     @RvFlowProperty
     Long minInterval = 500L;
 
-    EvictingQueue<HistoryRecord> imgQ = EvictingQueue.create(bufSize);
+    volatile long lastUpdate = 0L;
+
+    //EvictingQueue<HistoryRecord> imgQ = EvictingQueue.create(bufSize);
+    List<HistoryRecord> imgQ = new LinkedList<HistoryRecord>();
 
     Lock imgQLock = new ReentrantLock();
 
@@ -43,11 +47,21 @@ public class ImageHistoryKeeper extends ImageProcessor {
 
     @Override
     void processAsync(ImageProcContext.Action action, RailvideoEvent event) {
+        long time = System.currentTimeMillis();
+        if (time - lastUpdate < minInterval) {
+            return;
+        }
         imgQLock.lock();
         try{
-            RvMat img = action.getImageData();
+            Mat img = action.getImageData().cloneAsMat();
             String name = event.getCaptureId();
+            if (imgQ.size() >= bufSize) {
+                HistoryRecord oldRec = imgQ.get(0);
+                oldRec.mat.release();
+                imgQ.remove(0);
+            }
             imgQ.add(new HistoryRecord(img, name, event.getTimestamp()));
+            lastUpdate = time;
         } finally {
             imgQLock.unlock();
         }
@@ -56,6 +70,8 @@ public class ImageHistoryKeeper extends ImageProcessor {
 
     @Override
     public List<Mat> getBearingMats() {
+        return super.getBearingMats();
+        /*
         imgQLock.lock();
         try{
             List<Mat> ret = super.getBearingMats();
@@ -63,7 +79,7 @@ public class ImageHistoryKeeper extends ImageProcessor {
             return ret;
         } finally {
             imgQLock.unlock();
-        }
+        }*/
     }
 
     public List<HistoryRecord> getHistoryCopy(){
@@ -85,6 +101,21 @@ public class ImageHistoryKeeper extends ImageProcessor {
         }
     }
 
+    public Integer getBufSize() {
+        return bufSize;
+    }
+
+    public void setBufSize(Integer bufSize) {
+        this.bufSize = bufSize;
+    }
+
+    public Long getMinInterval() {
+        return minInterval;
+    }
+
+    public void setMinInterval(Long minInterval) {
+        this.minInterval = minInterval;
+    }
 
     public class HistoryRecord {
         public Mat mat;

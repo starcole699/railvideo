@@ -178,7 +178,18 @@ def generate_sample():
 
 
 
+for i in range(0, 150):
+    data = generate_sample()
+    print(data)
+    tt = data['end_time']
+    for ss in data['sensors']:
+        mm = ss['sensor_type'].split('_')[0]
+        nn = ss['sensor_name']
+        for cc in ss['channels']:
+            vv = cc['max_value']
+            str = ""
 
+#exit(0)
 #
 #print(response)
 for i in range(0, 150):

@@ -1,5 +1,7 @@
 package rgups.railvideo.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -15,6 +17,15 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "alarms", path = "alarms")
 public interface AlarmRepo extends JpaRepository<DbAlarm, Long> {
 
-    List<DbAlarm> findByTimeAfterOrderByTime(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")@Param("time") Date time);
+    Page<DbAlarm> findByTimeAfterOrderByTimeDesc(
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")@Param("time") Date time,
+            Pageable p);
+
+    Page<DbAlarm> findByTimeAfterOrderByTime(
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")@Param("time") Date time,
+            Pageable p);
+
     List<DbAlarm> findByTimeIsGreaterThan(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")@Param("time") Date time);
+
+    Page<DbAlarm> findByIdIsNotNullOrderByTimeDesc(Pageable p);
 }

@@ -38,7 +38,10 @@
 
 
 <body>
-
+<div style="position: absolute; z-index: 99; left: 10px; top: 10px;  width: 40px; height: 30px;"> <a href="/static/index.html">
+    <img style="width: 100%; height: 100%" src="/static/img/logo2.png"/>
+</a> </div>
+<div style="position: absolute; z-index: 9; left: 0px; top: 0px;  right: 0px; height: 100%;">
 <script>
     var app = angular.module('sensorsApp', ["ngResource", "highcharts-ng"]);
 
@@ -46,7 +49,8 @@
         "angle_sensor":   "Угловой датчик",
         "optical_sensor": "Датчик разрыва линии",
         "security_sensor":   "Сигнализация",
-    }
+        "vibration_sensor": "Датчик вибрации"
+    };
     function sensorTypeToStr(sensor_typename) {
         ret = sensor_type_names[sensor_typename] || sensor_typename;
         return ret
@@ -140,7 +144,7 @@
             $timeout(function() {
                 $scope.getData();
                 $scope.intervalFunction();
-            }, 2500)
+            }, 1100)
         };
 
         $scope.chartConfig = function(data) {
@@ -198,6 +202,6 @@
         </table>
     </div>
 </div>
-
+</div>
 </body>
 </html>

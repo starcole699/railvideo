@@ -18,6 +18,12 @@ public class TablesTest {
         HOSTING.put(3, "digitalocean.com");
         HOSTING.put(4, "aws.amazon.com");
 
+        for (Map.Entry<Integer, String> entry : HOSTING.entrySet()){
+            entry.setValue(entry.getValue() + "---gggg");
+        }
+
+        System.out.println(HOSTING);
+
         Table table = Table.create("t");
         FloatColumn floatColumn = new FloatColumn("f1");
         DoubleColumn doubleColumn = new DoubleColumn("d1");
